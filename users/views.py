@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render ,redirect
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
@@ -17,16 +17,24 @@ class login(View):
 
     def post(self, request):
         email = request.POST.get('email')
+        if not User.objects.filter(email=email).exists():
+            return render(request, 'users/login.html', {'error': 'Account not exists.'})
         password = request.POST.get('password')
-        current_password = User.objects.get(email=email).password
-        if password == current_password:
-            # Send email
-            subject = 'Login Successful'
-            message = 'You have successfully logged in.'
-            request.session['id']=User.objects.get(email=email).id
-            request.session['username']=User.objects.get(email=email).fname
-            login(request)
-            return render(request, 'home.html')
+        current_user= User.objects.get(email=email)
+        if password == current_user.password:
+            if current_user.active_email == False:
+                return redirect('active', current_user.id)
+            
+            login_authuser=authenticate(
+                username=request.POST['username'],
+                password=request.POST['password'])
+            if(current_user is not None and login_authuser):
+            ##sesion
+                request.session['id']=current_user.id
+                request.session['name']=current_user.fname
+                login(request)
+                
+                return redirect('')
         else:
             return render(request, 'users/login.html')
 
@@ -48,16 +56,9 @@ class register(View):
 
         user = User(fname=fname, lname=lname, email=email, password=password, picture=picture, phone=phone)
         user.save()
-
-        
         activation_code = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         User_active.objects.create(user=user, active=activation_code)
-        subject = 'Account Activation'
-        message = f'Your activation link is: http://127.0.0.1:8000/{user.id}/{activation_code}'
-        send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
-
-        return render(request, 'users/active.html',{'message': 'Please check your email to activate your account.'})
-
+        return redirect('active', user.id)
 def activation(request, id, activation_code):
     user = User.objects.get(id=id)
     use_active=User_active.objects.get(user=user)
@@ -68,8 +69,16 @@ def activation(request, id, activation_code):
 
     return render(request, 'users/active.html',{'error': 'Activation link is invalid or expired.'})
 
-def active(requset,id):
-    return render(requset, 'users/active.html')
+def active(request,id):
+    user = User.objects.get(id=id)
+    activation_code = User_active.objects.get(user=user).active
+    subject = 'Account Activation'
+    message = f'Your activation link is: http://127.0.0.1:8000/users/{user.id}/{activation_code}'
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
+
+    return render(request, 'users/active.html',{'message': 'Please check your email to activate your account.'})
+
+    
 
 
 
