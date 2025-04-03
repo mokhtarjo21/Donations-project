@@ -2,105 +2,17 @@
 
 {% block content %}
 <div class="container my-5">
-    <!-- Categories Section -->
+    <!-- categories section -->
     <section class="mb-5">
         <h2>Browse Categories</h2>
-        <div class="row">
-            {% for category in categories %}
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ category.name }}</h5>
-                        <p class="card-text">{{ category.project_count }} projects</p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+        {% include "components/category_component.html" with category=category %}
     </section>
 
-    <!-- Projects Section -->
+    <!-- project browser -->
     <section>
         <h2>Featured Projects</h2>
-        <div class="row">
-            {% for project in projects %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    {% if project.projectpictures_set.all %}
-                    <div id="carousel-{{ project.id }}" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            {% for picture in project.projectpictures_set.all %}
-                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <img src="{{ picture.image.url }}" class="d-block w-100" alt="{{ project.title }}">
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="card-body">
-                        <h5 class="card-title">{{ project.title }}</h5>
-                        <p class="card-text">{{ project.details|truncatewords:30 }}</p>
-                        
-                        <!-- Creator Info -->
-                        <div class="mb-2">
-                            <small class="text-muted">Created by: {{ project.creator.fname }} {{ project.creator.lname }}</small>
-                        </div>
+        {% include "components/project_component.html" with project=project %}
 
-                        <!-- Category -->
-                        <div class="mb-2">
-                            <span class="badge bg-primary">{{ project.category.name }}</span>
-                        </div>
-
-                        <!-- Tags -->
-                        <div class="mb-2">
-                            {% for tag in project.tags.all %}
-                            <span class="badge bg-secondary">{{ tag.name }}</span>
-                            {% endfor %}
-                        </div>
-
-                        <!-- Funding Progress -->
-                        <div class="funding-info mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Raised: ${{ project.current_amount }}</span>
-                                <span>Goal: ${{ project.target }}</span>
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" 
-                                     style="width: {{ project.funding_percentage }}%"
-                                     aria-valuenow="{{ project.funding_percentage }}" 
-                                     aria-valuemin="0" aria-valuemax="100">
-                                    {{ project.funding_percentage|floatformat:1 }}%
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Time Information -->
-                        <div class="time-info">
-                            <small class="text-muted">
-                                Started: {{ project.start_time|date:"M d, Y" }}
-                                {% if project.end_time %}
-                                <br>Ends: {{ project.end_time|date:"M d, Y" }}
-                                {% endif %}
-                            </small>
-                        </div>
-
-                        <!-- Image Count -->
-                        <div class="mt-2">
-                            <small class="text-muted">{{ project.image_count }} images</small>
-                        </div>
-                    </div>
-
-                    <div class="card-footer">
-                        <a href="#" class="btn btn-primary btn-sm">View Details</a>
-                        {% if project.can_be_cancelled %}
-                        <span class="badge bg-warning float-end">Can be cancelled</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
     </section>
 </div>
 {% endblock %}
