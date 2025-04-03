@@ -4,6 +4,7 @@ from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils.timezone import now 
 from django.contrib.auth import authenticate,login,logout
 from django.views import View
 from users.models import User ,User_active
@@ -25,18 +26,11 @@ class login(View):
             if current_user.active_email == False:
                 return redirect('active', current_user.id)
             
-            login_authuser=authenticate(
-                username=request.POST['username'],
-                password=request.POST['password'])
-            if(current_user is not None and login_authuser):
-            ##sesion
-                request.session['id']=current_user.id
-                request.session['name']=current_user.fname
-                login(request)
+            
                 
-                return redirect('')
+            return redirect('/')
         else:
-            return render(request, 'users/login.html')
+            return render(request, 'users/login.html',{'error': 'Email or password is incorrect.'})
 
 class register(View):
     def get(self, request):
@@ -62,15 +56,23 @@ class register(View):
 def activation(request, id, activation_code):
     user = User.objects.get(id=id)
     use_active=User_active.objects.get(user=user)
-    if (use_active.active == activation_code & use_active.time_send -datetime.now() < timedelta(days=1)):
+
+    if (use_active.active == activation_code and now() - use_active.time_send < timedelta(days=1)):
         user.active_email = True
         user.save()
         return render(request, 'users/active.html',{'message': 'Your account has been activated successfully.'})
 
-    return render(request, 'users/active.html',{'error': 'Activation link is invalid or expired.'})
+    return render(request, 'users/active.html',{'message': 'Activation link is invalid or expired.'})
 
 def active(request,id):
     user = User.objects.get(id=id)
+    if (now() - use_active.time_send < timedelta(days=1)):
+        activation_code = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        use_active = User_active.objects.get(user=user)
+        use_active.active = activation_code
+        use_active.time_send = now()
+        use_active.save()
+
     activation_code = User_active.objects.get(user=user).active
     subject = 'Account Activation'
     message = f'Your activation link is: http://127.0.0.1:8000/users/{user.id}/{activation_code}'
