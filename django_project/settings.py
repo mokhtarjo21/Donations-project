@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
     'chatgpt.apps.ChatgptConfig',
+    'projects.apps.ProjectsConfig',
+    'interactions.apps.InteractionsConfig',
 ]
 
 MIDDLEWARE = [
