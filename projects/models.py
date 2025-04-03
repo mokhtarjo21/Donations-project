@@ -24,7 +24,7 @@ class Tag(models.Model):
 
 class Project(models.Model):
     """
-    The main project model for fundraising campaigns
+    The main project model, the model has automatic id field created by django 
     """
     # Basic information
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
