@@ -24,7 +24,7 @@ class login(View):
             subject = 'Login Successful'
             message = 'You have successfully logged in.'
             request.session['id']=User.objects.get(email=email).id
-            request.session['fname']=User.objects.get(email=email).fname
+            request.session['username']=User.objects.get(email=email).fname
             login(request)
             return render(request, 'home.html')
         else:
@@ -68,21 +68,13 @@ def activation(request, id, activation_code):
 
     return render(request, 'users/active.html',{'error': 'Activation link is invalid or expired.'})
 
-def active(requset):
+def active(requset,id):
     return render(requset, 'users/active.html')
 
 
 
 
-def home(request):
-    # subject = 'Hello from Django'
-    # message = 'This is a test email sent from Django.'
-    # recipient_list = ['mokhtar.jo21@gmail.com']
-    
-    # # Send the email
-    # send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list)
-
-    # print("Email sent successfully!")
-
-    return render(request, 'users/active.html')
-# Create your views here.
+def logout(request):
+    request.session.clear()
+    logout(request)
+    return redirect('users')

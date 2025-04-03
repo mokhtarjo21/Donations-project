@@ -13,6 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('/', include('main.urls')),
     path ('chat', include('chatgpt.urls')),
+    path ('users/', include('users.urls')),
 ]
 if settings.DEBUG:  # Serve media files in development mode
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

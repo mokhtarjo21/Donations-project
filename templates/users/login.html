@@ -1,28 +1,35 @@
-{% extends "header-footer.html" %}
-    {% block content %}
-    <div class="col-6 mx-auto">
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'users/css/login.css' %}">
+    <title>Login</title>
+</head>
+<body>
+    <div class="login-box">
         <h2>Login</h2>
-        <form method="post" class="p-4 shadow rounded bg-light">
+        <form>
             {% csrf_token %}
-            <h3 class="text-center mb-4">Welcome Back</h3>
-            <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
-           
-            </div>
-            <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <input type="checkbox" id="remember" name="remember">
-                <label for="remember" class="form-label">Remember me</label>
-            </div>
-            <a href="#" class="text-decoration-none">Forgot password?</a>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
-            <p class="text-center mt-3">Don't have an account? <a href="/register" class="text-decoration-none">Sign up</a></p>
+          <div class="user-box">
+            <input type="email" name="email" required>
+            <label>Username</label>
+          </div>
+          <div class="user-box">
+            <input type="password" name="password" required>
+            <label>Password</label>
+          </div>
+          <button type="submit" >
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Submit
+          </button>
         </form>
-        </div>
-       {% endblock %}
+      </div>
+</body>
+</html>
+      
+      
