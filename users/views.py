@@ -52,7 +52,7 @@ class register(View):
         user.save()
         activation_code = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         User_active.objects.create(user=user, active=activation_code)
-        return redirect('active/{user.id}')
+        return redirect(f'active/{user.id}')
 def activation(request, id, activation_code):
     user = User.objects.get(id=id)
     use_active=User_active.objects.get(user=user)
