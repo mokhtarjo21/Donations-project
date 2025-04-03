@@ -52,7 +52,7 @@ class register(View):
         user.save()
         activation_code = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         User_active.objects.create(user=user, active=activation_code)
-        return redirect('active', user.id)
+        return redirect('active/{user.id}')
 def activation(request, id, activation_code):
     user = User.objects.get(id=id)
     use_active=User_active.objects.get(user=user)
@@ -66,6 +66,7 @@ def activation(request, id, activation_code):
 
 def active(request,id):
     user = User.objects.get(id=id)
+    use_active = User_active.objects.get(user=user)
     if (now() - use_active.time_send < timedelta(days=1)):
         activation_code = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         use_active = User_active.objects.get(user=user)
