@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # installed apps.....
     'users.apps.UsersConfig',
+    'main.apps.MainConfig',
     'chatgpt.apps.ChatgptConfig',
     'projects.apps.ProjectsConfig',
     'interactions.apps.InteractionsConfig',
