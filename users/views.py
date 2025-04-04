@@ -20,24 +20,26 @@ from openai import OpenAI ,RateLimitError
 from rest_framework.decorators import api_view
 
 
-class login(View):
+class LoginView(View):
     def get(self, request):
         return render(request, 'users/login.html')
 
     def post(self, request):
         email = request.POST.get('email')
         if not User.objects.filter(email=email).exists():
-            return render(request, 'users/login.html', {'error': 'Account not exists.'})
+            return render(request, 'users/login.html', {'error': 'Account does not exist.'})
+        
         password = request.POST.get('password')
-        current_user= User.objects.get(email=email)
+        current_user = User.objects.get(email=email)
+        
         if password == current_user.password:
-            if current_user.active_email == False:
+            if not current_user.active_email:
                 return redirect('active', current_user.id)
             
-            login(request)
+            login(request, current_user)
             return redirect('/')
         else:
-            return render(request, 'users/login.html',{'error': 'Email or password is incorrect.'})
+            return render(request, 'users/login.html', {'error': 'Email or password is incorrect.'})
 
 class register(View):
     def get(self, request):
@@ -92,11 +94,9 @@ def active(request,id):
 
 
 
-
-def logout(request):
-    request.session.clear()
+def logout_view(request):
     logout(request)
-    return redirect('users')
+    return redirect('/users/')  # Ensure the path matches your login URL
 
 
 @api_view(['GET'])
