@@ -1,16 +1,24 @@
-from django.shortcuts import render ,redirect
+from django.shortcuts import render ,redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404
+
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.timezone import now 
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.models import AnonymousUser
 from django.views import View
 from users.models import User ,User_active
 import random
 import string
 from datetime import datetime, timedelta
+
+
+from django.http import JsonResponse
+import json
+from openai import OpenAI ,RateLimitError
+from rest_framework.decorators import api_view
+
 
 class login(View):
     def get(self, request):
@@ -26,8 +34,7 @@ class login(View):
             if current_user.active_email == False:
                 return redirect('active', current_user.id)
             
-            
-                
+            login(request)
             return redirect('/')
         else:
             return render(request, 'users/login.html',{'error': 'Email or password is incorrect.'})
@@ -90,3 +97,24 @@ def logout(request):
     request.session.clear()
     logout(request)
     return redirect('users')
+
+
+@api_view(['GET'])
+def who(request):
+    userw = request.user
+    print(type(userw))
+    if isinstance(userw, AnonymousUser):
+        return JsonResponse({'response':{'state': False}})
+    else:
+        user_data = {
+            'state': True,
+            'id': userw.id,
+            'email': userw.email,
+            'first_name': userw.first_name,
+            'last_name': userw.last_name,
+            'fname': userw.fname,
+            'lname': userw.lname,
+            'pciture': userw.picture.url if userw.picture else None
+        }
+        return JsonResponse({'response': user_data})
+     
