@@ -14,7 +14,18 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.fname
-    
+    def save(self, *args, **kwargs):
+        # Set username to email if not provided
+        if not self.username:
+            self.username = self.email
+            
+        # Use first_name and last_name instead of fname/lname
+        if hasattr(self, 'fname'):
+            self.first_name = self.fname
+        if hasattr(self, 'lname'):
+            self.last_name = self.lname
+            
+        super().save(*args, **kwargs)
 
 
 class User_active(models.Model):
