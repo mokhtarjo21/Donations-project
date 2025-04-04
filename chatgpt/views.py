@@ -30,7 +30,7 @@ def api_request_response(request):
 
       history_anonymous.append({"role": "user", "content": message})
       try:
-         client = OpenAI(api_key="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")
+         client = OpenAI(api_key="Your-API-KEY")
          completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=history_anonymous,
@@ -53,7 +53,7 @@ def api_request_response(request):
          history.append({"role": "user", "content": message})
          try:
             print(user)
-            client = OpenAI(api_key="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")
+            client = OpenAI(api_key="Your-API-KEY")
             completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=history,
