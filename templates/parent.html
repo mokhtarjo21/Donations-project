@@ -38,6 +38,7 @@
                     <li class="nav-item"><a href="#" class="nav-link text-white fw-semibold">Contact</a></li>
                 </ul>
             </nav>
+            {% csrf_token %}
             <div id="user_info" class="d-flex align-items-center gap-2">
 
 
@@ -75,13 +76,13 @@
                             <li><a class="dropdown-item" href="/profile">View Profile</a></li>
                             <li><a class="dropdown-item" >${user.response.fname}</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/users/logout">Log Out</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
                         </ul>
                     `;
                 } else {
                     user_info.innerHTML = `
-                        <a href="/users" class="btn btn-outline-light btn-sm my-2">Log In</a>
-                    <a href="/users/register" class="btn btn-outline-light btn-sm">Sign Up</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm my-2">Log In</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm">Sign Up</a>
                     `;
                 }
 

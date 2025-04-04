@@ -1,7 +1,7 @@
 from django.shortcuts import render ,redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.conf import settings
-
+from chatgpt.models import ChatMessage
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.timezone import now 
@@ -61,6 +61,7 @@ class register(View):
         user.save()
         activation_code = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         User_active.objects.create(user=user, active=activation_code)
+        
         return redirect(f'active/{user.id}')
 def activation(request, id, activation_code):
     user = User.objects.get(id=id)
@@ -76,7 +77,7 @@ def activation(request, id, activation_code):
 def active(request,id):
     user = User.objects.get(id=id)
     use_active = User_active.objects.get(user=user)
-    if (now() - use_active.time_send < timedelta(days=1)):
+    if (now() - use_active.time_send > timedelta(days=1)):
         activation_code = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         use_active = User_active.objects.get(user=user)
         use_active.active = activation_code
@@ -102,7 +103,6 @@ def logout_view(request):
 @api_view(['GET'])
 def who(request):
     userw = request.user
-    print(type(userw))
     if isinstance(userw, AnonymousUser):
         return JsonResponse({'response':{'state': False}})
     else:

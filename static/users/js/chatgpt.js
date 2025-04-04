@@ -1,9 +1,23 @@
 const chatContainer = document.getElementById("chat-messages");
 const userInput = document.getElementById("chat-input");
+// الحصول على CSRF token من الكوكيز
+const getCookie = (name) => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split("; ");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].split("=");
+            if (cookie[0] === name) {
+                cookieValue = decodeURIComponent(cookie[1]);
+                break;
+            }
+        }
+    }
+    return cookieValue;
+};
 
-
-
-
+const csrfToken = getCookie('csrftoken');
+console.log(csrfToken + " csrfToken");
 
 userInput.addEventListener("keypress", function (e) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -13,23 +27,27 @@ userInput.addEventListener("keypress", function (e) {
 });
 
 async function sendMessage() {
+    
+    
     const message = userInput.value.trim();
     if (!message) return;
-
+    
     appendMessage(message, "user");
     
     userInput.value = "";
     userInput.style.height = "auto";
-
+    
     try {
+        
         const response = await fetch("/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'X-CSRFToken': csrfToken, 
             },
             body: JSON.stringify({ message: message }),
         });
-
+        
         const data = await response.json();
         if (data.error) {
             appendMessage(`Error: ${data.error}`, "bot");
