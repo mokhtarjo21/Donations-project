@@ -15,12 +15,13 @@
             {% csrf_token %}
           <div class="user-box">
             <input type="email" name="email" required>
-            <label>Username</label>
+            <label>Email</label>
           </div>
           <div class="user-box">
             <input type="password" name="password" required>
             <label>Password</label>
           </div>
+          
           <button type="submit" >
             <span></span>
             <span></span>
@@ -28,6 +29,9 @@
             <span></span>
             Submit
           </button>
+          <div class="signup-link"></div>
+            <p>Don't have an account? <a href="#">Sign up here</a></p>
+          </div>
         </form>
       </div>
 </body>
