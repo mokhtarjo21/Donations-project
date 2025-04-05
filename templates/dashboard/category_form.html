@@ -1,0 +1,23 @@
+{% extends "parent.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">{{ form.instance.pk|yesno:"✏️ Edit Category,➕ Add Category" }}</h4>
+    </div>
+
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ form.as_p }}
+        </div>
+
+        <button type="submit" class="btn btn-success me-2">💾 Save</button>
+        <a href="{% url 'category_list' %}" class="btn btn-secondary">↩️ Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

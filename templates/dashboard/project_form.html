@@ -1,0 +1,57 @@
+{% extends "parent.html" %} {% block content %}
+<div class="container mt-5">
+  <div class="card shadow p-4">
+    <h2 class="mb-4">
+      {{ form.instance.pk|yesno:"Edit Project,Add Project" }}
+    </h2>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label" for="id_title">Title</label>
+        {{ form.title }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="id_details">Details</label>
+        {{ form.details }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="id_category">Category</label>
+        <select name="category" class="form-select" id="id_category">
+          <option value="">Select a category</option>
+          {% for category in categories %}
+          <option value="{{ category.id }}">{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="id_target">Target Amount</label>
+        {{ form.target }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="id_end_time">End Time</label>
+        {{ form.end_time }}
+      </div>
+
+
+
+      <div class="mb-3">
+        <label class="form-label" for="id_tags">Tags</label>
+        <select name="tags" class="form-select" id="id_tags" multiple>
+          {% for tag in tags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success">💾 Save</button>
+      <a href="{% url 'project_list' %}" class="btn btn-secondary">↩️ Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
