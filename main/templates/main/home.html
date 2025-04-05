@@ -5,15 +5,43 @@
     <!-- categories section -->
     <section class="mb-5">
         <h2>Browse Categories</h2>
-        {% include "components/category_component.html" with category=category %}
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-md-3 mb-3">
+                <a href="/?category={{ category.slug }}" style="text-decoration: none; color: inherit;">
+                    <div class="card {% if category.slug == selected_category %}border-primary{% endif %}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text">{{ category.project_count }} projects</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
     </section>
 
-    <!-- project browser -->
     <section>
-        <h2>Featured Projects</h2>
-        {% include "components/project_component.html" with project=project %}
-
+        <h2>
+            {% if selected_category %}
+                Projects in "{{ selected_category|capfirst }}" Category
+            {% else %}
+                Featured Projects
+            {% endif %}
+        </h2>
+    
+        {% if projects %}
+        <div class="row">
+            {% for project in projects %}
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card w-100 h-100">
+                    {% include "components/project_component.html" with project=project %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>No projects found in this category.</p>
+        {% endif %}
     </section>
-    s
-</div>
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends "parent.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1>{{ project.title }}</h1>
+
+    {% if project.projectpictures_set.all %}
+    <div class="mb-4">
+        {% for picture in project.projectpictures_set.all %}
+        <img src="{{ picture.image.url }}" class="img-fluid mb-2" alt="{{ project.title }}" style="max-height: 300px;">
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <p><strong>Description:</strong></p>
+    <p>{{ project.details }}</p>
+
+    <p><strong>Category:</strong> {{ project.category.name }}</p>
+    <p><strong>Created by:</strong> {{ project.creator.fname }} {{ project.creator.lname }}</p>
+    <p><strong>Tags:</strong>
+        {% for tag in project.tags.all %}
+        <span class="badge bg-secondary">{{ tag.name }}</span>
+        {% empty %}
+        <span class="text-muted">No tags</span>
+        {% endfor %}
+    </p>
+
+    <p><strong>Raised:</strong> ${{ project.current_amount }} / ${{ project.target }}</p>
+    <p><strong>Start:</strong> {{ project.start_time|date:"M d, Y" }}</p>
+    <p><strong>End:</strong> {{ project.end_time|date:"M d, Y" }}</p>
+
+    {% if project.can_be_cancelled %}
+    <p><span class="badge bg-warning">Can be cancelled</span></p>
+    {% endif %}
+</div>
+{% endblock %}

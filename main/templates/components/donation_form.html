@@ -1,0 +1,15 @@
+{% extends "parent.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2>Donate to: {{ project.title }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="amount" class="form-label">Donation Amount ($)</label>
+            <input type="number" name="amount" id="amount" class="form-control" required min="1">
+        </div>
+        <button type="submit" class="btn btn-success">Donate</button>
+    </form>
+</div>
+{% endblock %}
