@@ -1,0 +1,235 @@
+{% extends 'parent.html' %}
+{% load static %}
+
+{% block style %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'main/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <img src="{{ user.picture_url }}" alt="Profile Picture" class="profile-pic">
+        <div class="profile-info">
+            <h1>{{ user.first_name }} {{ user.last_name }} </h1>
+            <p>Member since {{ user.date_joined|date:"F Y" }}</p>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <h3>${{ user_stats.total_donated|floatformat:0 }}</h3>
+                    <p>Total Donated</p>
+                </div>
+                <div class="stat-item">
+                    <h3>{{ user_stats.projects_supported }}</h3>
+                    <p>Projects Supported</p>
+                </div>
+
+                <div class="d-flex justify-content-center align-items-center gap-2">
+
+                    <a href="{% url 'donation_history' %}" class="btn btn-primary d-block">View Donation History</a>
+                
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary d-block">Edit profile</a>
+
+                    <a href="{% url 'user_projects' %}" class="btn btn-primary d-block">My Projects</a>
+                </div> 
+
+            </div>
+        </div>
+    </div>
+
+    <!-- adding user div to show information -->
+    <div class="user-info">
+        <h2>User Information</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <strong>Full Name:</strong>
+                <span>{{ user.first_name }} {{ user.last_name }}</span>
+            </div>
+            <div class="info-item">
+                <strong>Email:</strong>
+                <span>{{ user.email }}</span>
+            </div>
+            <div class="info-item">
+                <strong>Phone:</strong>
+                <span>{{ user.phone }}</span>
+            </div>
+            <div class="info-item">
+                <strong>Facebook Account:</strong>
+                <span>{% if user.facebook %}{{ user.facebook }}{% else %}N/A{% endif %}</span>
+            </div>
+            <div class="info-item">
+                <strong>Birthdate:</strong>
+                <span>{% if user.birthdate %}{{ user.birthdate|date:"F d, Y" }}{% else %}N/A{% endif %}</span>
+            </div>
+            <div class="info-item">
+                <strong>Email Verified:</strong>
+                <span>{% if user.is_active %}Yes{% else %}No{% endif %}</span>
+            </div>
+            <div class="info-item">
+                <strong>Member Since:</strong>
+                <span>{{ user.date_joined|date:"F Y" }}</span>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="dashboard-grid">
+        <div class="main-content">
+            <!-- Donation Activity Chart -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Donation Activity</h2>
+                    <div>
+                        <span class="badge badge-primary">All</span>
+                        <span class="badge badge-secondary">Monthly</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="donationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Donations -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Recent Donations</h2>
+                    <a href="{% url 'donation_history' %}" class="view-all-link">View All</a>
+                </div>
+                {% if recent_donations %}
+                <ul class="donation-list">
+                    {% for donation in recent_donations %}
+                    <li class="donation-item">
+                        {% if donation.project_image %}
+                        <img src="{{ donation.project_image.url }}" alt="{{ donation.project_title }}"
+                            class="project-icon">
+                        {% else %}
+                        <img src="{% static 'images/default-project-image.png' %}" alt="{{ donation.project_title }}"
+                            class="project-icon">
+                        {% endif %}
+                        <div class="donation-info">
+                            <h4>{{ donation.project_title }}</h4>
+                            <p>{{ donation.donation_date|date:"F d, Y" }}</p>
+                        </div>
+                        <div class="donation-amount">${{ donation.amount|floatformat:0 }}</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state">
+                    <p>You haven't made any donations yet. <a href="{% url '' %}">Explore projects</a> to start making
+                        an impact!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <!-- Impact Summary -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Impact Summary</h2>
+                </div>
+                <div class="impact-stats">
+                    <div class="annual-target">
+                        <h4>Annual Target: ${{ impact_summary.annual_target|floatformat:0 }}</h4>
+                        <div class="donation-progress">
+                            <div class="progress-bar"
+                                style="width: {{ impact_summary.progress_percentage|floatformat:0 }}%"></div>
+                        </div>
+                        <p class="progress-text">${{ impact_summary.current_progress|floatformat:0 }} of 
+                            ${{impact_summary.annual_target|floatformat:0 }} ({{ impact_summary.progress_percentage|floatformat:0 }}%)</p>
+                    </div>
+
+                {% if impact_summary.impacts %}
+
+                {% for impact in impact_summary.impacts %}
+                {% if impact.category == "urgent" %}
+                    <strong>🚨 Urgent:</strong> You donated {{ impact.amount }}$  to urgent cases! <br>
+                {% elif impact.category == "education" %}
+                    <strong>📚 Education:</strong> Your supported education with {{ impact.amount }}$ <br>
+                {% elif impact.category == "poor" %}
+                    <strong>🥀🥺 Poor:</strong> {{ impact.amount }}$ has reache the poor's hands <br>
+                {% elif impact.category == "food" %}
+                    <strong>🍲 Food:</strong> Donated {{ impact.amount }}$ for making meals <br>
+                {% elif impact.category == "gaza" %}
+                    <strong>🇵🇸 Food:</strong> {{ impact.amount }}$ for gaza children <br>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                    Make more donations to see your impact grow!
+                {% endif %}
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Sample data for the chart
+        const donationData = {
+        labels: {{ chart_data.labels|safe }},
+        datasets: [{
+            label: 'Hourly Donations ($)',
+            data: {{ chart_data.values|safe }},
+            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+            borderColor: 'rgba(46, 204, 113, 1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true
+        }]
+    };
+        
+        // Initialize chart
+        const ctx = document.getElementById('donationChart').getContext('2d');
+        const donationChart = new Chart(ctx, {
+        type: 'line',
+        data: donationData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false,
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        maxTicksLimit: 12,  // Show fewer x-axis labels
+                        maxRotation: 45    // Rotate labels for better fit
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `$${context.parsed.y.toFixed(2)}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+        
+
+    </script>
+{% endblock %}

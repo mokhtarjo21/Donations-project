@@ -1,0 +1,111 @@
+{% extends 'parent.html' %}
+{% load static %}
+
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'main/css/donation_history.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Donation Stats -->
+    <div class="stats-wrapper mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content">
+                        <h3>${{ stats.total_donated|floatformat:0 }}</h3>
+                        <p>Total Donated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-content">
+                        <h3>{{ stats.total_projects }}</h3>
+                        <p>Projects Supported</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon">🤝</div>
+                    <div class="stat-content">
+                        <h3>{{ stats.total_donations }}</h3>
+                        <p>Total Donations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donations List -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h2 class="mb-0">Donation History</h2>
+        </div>
+        <div class="card-body p-0">
+            {% if donations %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>View</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in donations %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if donation.project.projectpictures_set.first %}
+                                            <img src="{{ donation.project.projectpictures_set.first.image.url }}" 
+                                                 alt="{{ donation.project.title }}"
+                                                 class="project-thumbnail" style="width: 100px; height: 70px; border-radius: 15px;">
+                                        {% else %}
+                                            <div class="project-thumbnail-placeholder">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="ms-3">
+                                            <h6 class="mb-0">{{ donation.project.title }}</h6>
+                                            <small class="text-muted">{{ donation.project.category.name }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{% url 'home'  %}" class="text-decoration-none">
+                                        <button class="btn btn-primary">
+                                            
+                                            View Project Details
+                                        </button>
+                                    </a>
+                                </td>
+                                <td>{{ donation.created_at|date:"M d, Y" }}</td>
+                                <td>${{ donation.amount|floatformat:2 }}</td>
+                                <td>
+                                    <span class="badge bg-success">Completed</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state p-5 text-center">
+                    <div class="empty-state-icon mb-3">🎁</div>
+                    <h3>No Donations Yet</h3>
+                    <p class="text-muted">Start making a difference by supporting projects you care about.</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Explore Projects</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
