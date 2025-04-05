@@ -11,8 +11,9 @@ from dashboard.models import Project, Category
 from interactions.models import Donation, Comment, Rating, Report 
 from users.models import User
 from django.views.generic import TemplateView, DetailView
-
+from django.shortcuts import get_object_or_404
 from .forms import UserUpdateForm
+from decimal import Decimal
 @login_required
 def donate_view(request, pk):
     project = get_object_or_404(Project, pk=pk)
