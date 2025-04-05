@@ -1,9 +1,17 @@
 from django.db import models
 from users.models import User
+import os
+from django.utils.text import slugify
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
-    
+    slug = models.SlugField(blank=True)  # ⚠️ no unique=True for now!
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.name
     
@@ -83,3 +91,6 @@ class ProjectPictures(models.Model):
             if os.path.isfile(image_path):
                 os.remove(image_path)
         super().delete(*args, **kwargs)
+from django.db import models
+from users.models import User
+
