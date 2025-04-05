@@ -27,8 +27,8 @@
                     `;
                 } else {
                     user_info.innerHTML = `
-                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm my-2">Log In</a>
-                    <a href="{% url 'register' %}" class="btn btn-outline-light btn-sm">Sign Up</a>
+                        <a href="/users" class="btn btn-outline-light btn-sm my-2">Log In</a>
+                    <a href="/users/register" class="btn btn-outline-light btn-sm">Sign Up</a>
                     `;
                 }
 

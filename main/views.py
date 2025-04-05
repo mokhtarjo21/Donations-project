@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
@@ -10,10 +10,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from dashboard.models import Project, Category
 from interactions.models import Donation, Comment, Rating, Report 
 from users.models import User
+from django.views.generic import TemplateView, DetailView
 
-# forms 
 from .forms import UserUpdateForm
-
+@login_required
 def donate_view(request, pk):
     project = get_object_or_404(Project, pk=pk)
 
@@ -34,7 +34,7 @@ def donate_view(request, pk):
     return render(request, 'components/donation_form.html', {'project': project})
 
 
-class ProjectDetailView(DetailView):
+class ProjectDetailView(LoginRequiredMixin,DetailView):
     model = Project
     template_name = 'components/project_detail.html'  
     context_object_name = 'project'
@@ -69,8 +69,7 @@ class HomePage(TemplateView):
 
         return context
 
-
-class ProfilePage(View):
+class ProfilePage(LoginRequiredMixin,View):
     def get(self, request):
         # Only show the logged-in user's data
         user = request.user
@@ -197,7 +196,7 @@ class ProfilePage(View):
         return render(request, 'main/profile.html', context)
     
 
-class EditProfile( UpdateView):
+class EditProfile(LoginRequiredMixin, UpdateView):
     model = User
     template_name = "main/edit_profile.html"
     form_class = UserUpdateForm  
@@ -208,7 +207,7 @@ class EditProfile( UpdateView):
         return self.request.user
     
 
-class DonationHistory(View):
+class DonationHistory(LoginRequiredMixin,View):
     template_name = 'main/donation_history.html'
     
     def get(self, request):
@@ -237,7 +236,8 @@ class DonationHistory(View):
 
 
 # view to display all projects created by the user
-class UserProjects(View):
+
+class UserProjects(LoginRequiredMixin,View):
     def get(self, request):
         user = request.user
         
