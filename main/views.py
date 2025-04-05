@@ -14,6 +14,8 @@ from django.views.generic import TemplateView, DetailView
 from django.shortcuts import get_object_or_404
 from .forms import UserUpdateForm
 from decimal import Decimal
+
+from django.contrib import messages
 @login_required
 def donate_view(request, pk):
     project = get_object_or_404(Project, pk=pk)
