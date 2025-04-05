@@ -22,7 +22,7 @@
                             <li><a class="dropdown-item" href="/profile">View Profile</a></li>
                             <li><a class="dropdown-item" >${user.response.fname}</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
+                            <li><a class="dropdown-item" href="/users/logout">Log Out</a></li>
                         </ul>
                     `;
                 } else {

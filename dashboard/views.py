@@ -57,7 +57,7 @@ def project_list(request):
     projects = Project.objects.select_related('category', 'creator').prefetch_related('tags').all()
     return render(request, 'dashboard/project_list.html', {'projects': projects})
 
-
+@login_required
 def project_create(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
