@@ -9,7 +9,7 @@ from .forms import *
 # 
 # You'll create this form
 from .models import Category
-from projects.models import Tag 
+from .models import Tag 
 
 def is_admin(user):
     return user.is_staff

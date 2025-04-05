@@ -7,7 +7,7 @@ from django.db.models.functions import TruncMonth, TruncMinute, TruncHour
 from django.views.generic import DeleteView, UpdateView
 from datetime import datetime, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
-from projects.models import Project, Category
+from dashboard.models import Project, Category
 from interactions.models import Donation, Comment, Rating, Report 
 from users.models import User
 

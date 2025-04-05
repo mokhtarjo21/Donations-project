@@ -1,6 +1,6 @@
 from django import forms
 from .models import Category
-from projects.models import Project
+from .models import Project
 
 
 class CategoryForm(forms.ModelForm):

@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'main.apps.MainConfig',
     'chatgpt.apps.ChatgptConfig',
-    'projects.apps.ProjectsConfig',
+    'dashboard.apps.DashboardConfig',
     'interactions.apps.InteractionsConfig',
 ]
 
