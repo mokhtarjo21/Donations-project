@@ -1,6 +1,8 @@
 {% extends "parent.html" %}
-{% block content %}
-<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+{% load static %}
+
+
+<!-- <div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="card shadow-lg border-0" style="max-width: 500px; width: 100%;">
         <div class="card-body text-center">
             <div class="mb-4">
@@ -11,5 +13,36 @@
             <a href="{% url 'login' %}" class="btn btn-primary btn-block mt-3">Go to Login</a>
         </div>
     </div>
-</div>
+</div> -->
+
+
+{% block style %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Activation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-pzjw8f+ua7Kw1TIq0U7ty3uDL2Ruv6kDDp3LAX+COzyD2wzNHsnjcz68Y3pTgM3Q" crossorigin="anonymous">
+{% endblock %}
+{% block content %}
+    <div class="container text-center">
+        <h1>Account Activation</h1>
+        <div class="status">We have sent an activation link to your email. Please click the link to activate your account.</div>
+        <button class="activation-btn" onclick="simulateActivation()">Activate Account</button>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js (needed for Bootstrap components like modals) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy3+HXTrf6p+zQp6gKST5WAh1oXbUs5cQX4fo5+S" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% endblock %}
+    {% block js %}
+    <script>
+        function simulateActivation() {
+            const statusDiv = document.querySelector('.status');
+            statusDiv.textContent = 'Your account has been activated successfully!';
+            statusDiv.style.color = '#4CAF50';
+            statusDiv.style.animation = 'fadeInUp 2s forwards';
+        }
+    </script>
+
 {% endblock %}

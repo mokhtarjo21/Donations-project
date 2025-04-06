@@ -14,7 +14,7 @@ from django.views.generic import TemplateView, DetailView
 from django.shortcuts import get_object_or_404
 from .forms import UserUpdateForm
 from decimal import Decimal
-
+from django.db.models import Count, Sum
 from django.contrib import messages
 @login_required
 def donate_view(request, pk):
