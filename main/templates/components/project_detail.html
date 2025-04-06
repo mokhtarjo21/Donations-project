@@ -2,35 +2,152 @@
 
 {% block content %}
 <div class="container py-5">
-    <h1>{{ project.title }}</h1>
+    <h1 class="display-4">{{ project.title }}</h1>
 
     {% if project.projectpictures_set.all %}
     <div class="mb-4">
-        {% for picture in project.projectpictures_set.all %}
-        <img src="{{ picture.image.url }}" class="img-fluid mb-2" alt="{{ project.title }}" style="max-height: 300px;">
-        {% endfor %}
+        <div class="row">
+            {% for picture in project.projectpictures_set.all %}
+            <div class="col-md-4">
+                <img src="{{ picture.image.url }}" class="img-fluid mb-2" alt="{{ project.title }}" style="max-height: 300px; object-fit: cover;">
+            </div>
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
 
-    <p><strong>Description:</strong></p>
-    <p>{{ project.details }}</p>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title"><strong>Description:</strong></h5>
+            <p class="card-text">{{ project.details }}</p>
+        </div>
+    </div>
 
-    <p><strong>Category:</strong> {{ project.category.name }}</p>
-    <p><strong>Created by:</strong> {{ project.creator.fname }} {{ project.creator.lname }}</p>
-    <p><strong>Tags:</strong>
-        {% for tag in project.tags.all %}
-        <span class="badge bg-secondary">{{ tag.name }}</span>
-        {% empty %}
-        <span class="text-muted">No tags</span>
-        {% endfor %}
-    </p>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Category:</strong> {{ project.category.name }}</p>
+            <p><strong>Created by:</strong> {{ project.creator.fname }} {{ project.creator.lname }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Tags:</strong>
+                {% for tag in project.tags.all %}
+                <span class="badge bg-secondary">{{ tag.name }}</span>
+                {% empty %}
+                <span class="text-muted">No tags</span>
+                {% endfor %}
+            </p>
+        </div>
+    </div>
 
-    <p><strong>Raised:</strong> ${{ project.current_amount }} / ${{ project.target }}</p>
-    <p><strong>Start:</strong> {{ project.start_time|date:"M d, Y" }}</p>
-    <p><strong>End:</strong> {{ project.end_time|date:"M d, Y" }}</p>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Raised:</strong> ${{ project.current_amount }} / ${{ project.target }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Start:</strong> {{ project.start_time|date:"M d, Y" }}</p>
+            <p><strong>End:</strong> {{ project.end_time|date:"M d, Y" }}</p>
+        </div>
+    </div>
 
     {% if project.can_be_cancelled %}
     <p><span class="badge bg-warning">Can be cancelled</span></p>
     {% endif %}
+
+    <!-- Rating Section -->
+    <div class="mt-5">
+        <h3 class="mb-3">Rate This Project</h3>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="rating" class="form-label">Give a rating:</label>
+                <div id="rating" class="d-flex">
+                    <!-- Star Rating Input -->
+                    <input type="radio" id="star5" name="rating" value="5" {% if user.rating == 5 %} checked {% endif %}>
+                    <label for="star5" class="star">&#9733;</label>
+                    <input type="radio" id="star4" name="rating" value="4" {% if user.rating == 4 %} checked {% endif %}>
+                    <label for="star4" class="star">&#9733;</label>
+                    <input type="radio" id="star3" name="rating" value="3" {% if user.rating == 3 %} checked {% endif %}>
+                    <label for="star3" class="star">&#9733;</label>
+                    <input type="radio" id="star2" name="rating" value="2" {% if user.rating == 2 %} checked {% endif %}>
+                    <label for="star2" class="star">&#9733;</label>
+                    <input type="radio" id="star1" name="rating" value="1" {% if user.rating == 1 %} checked {% endif %}>
+                    <label for="star1" class="star">&#9733;</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Rating</button>
+        </form>
+
+        <hr>
+
+        <!-- Display Average Rating -->
+        <div class="mt-4">
+            <h4>Average Rating: </h4>
+            {% if project.average_rating %}
+            <div class="d-flex">
+                {% for i in 1..5 %}
+                <span class="star {% if project.average_rating >= i %}text-warning{% else %}text-muted{% endif %}">&#9733;</span>
+                {% endfor %}
+            </div>
+            <p>{{ project.average_rating }} / 5</p>
+            {% else %}
+            <p>No ratings yet. Be the first to rate!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="mt-5">
+        <h3 class="mb-3">Comments</h3>
+
+        <!-- Comment Form -->
+
+            <div class="mb-3">
+                <label for="comment" class="form-label">Leave a Comment:</label>
+                <textarea class="form-control" id="commentv" name="comment" rows="3" placeholder="Write your comment..."></textarea>
+            </div>
+            <button onclick="addComment({{project.id}})" class="btn btn-primary">Post Comment</button>
+        
+            
+        <hr>
+
+        <!-- Display Comments -->
+        <div class="comments-list mt-4">
+            {% for comment in project.comments.all %}
+            <div class="comment mb-3 p-3 border rounded">
+                <p><strong>{{ comment.author.fname }} {{ comment.author.lname }}</strong> <small class="text-muted">- {{ comment.created_at|date:"M d, Y" }}</small></p>
+                <p>{{ comment.content }}</p>
+
+                <!-- Reply Section -->
+                <div class="replies mt-3">
+                    {% for reply in comment.replies.all %}
+                    <div class="reply mb-2 p-2 border-start">
+                        <p><strong>{{ reply.author.fname }} {{ reply.author.lname }}</strong> <small class="text-muted">- {{ reply.created_at|date:"M d, Y" }}</small></p>
+                        <p>{{ reply.content }}</p>
+                    </div>
+                    {% empty %}
+                    <p>No replies yet.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Reply Form -->
+                <form method="post" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_comment_id" value="{{ comment.id }}">
+                    <div class="mb-3">
+                        <label for="reply" class="form-label">Reply to this comment:</label>
+                        <textarea class="form-control" id="reply" name="reply" rows="2" placeholder="Write your reply..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Post Reply</button>
+                </form>
+            </div>
+            {% empty %}
+            <p>No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}
+{% block js %}
+<script src="{% static 'users/js/comment-reply.js'%}"></script>
+ {% endblock %}
