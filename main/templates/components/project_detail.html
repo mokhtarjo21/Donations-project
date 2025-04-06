@@ -114,15 +114,32 @@
         <!-- Display Comments -->
         <div class="comments-list mt-4">
             {% for comment in project.comments.all %}
+            
             <div class="comment mb-3 p-3 border rounded">
-                <p><strong>{{ comment.author.fname }} {{ comment.author.lname }}</strong> <small class="text-muted">- {{ comment.created_at|date:"M d, Y" }}</small></p>
+                <img src="{{comment.user.picture}}" alt="{{ comment.user.fname }} " class="rounded-circle" style="width: 40px; height: 40px; cursor: pointer;" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" />
+                <p><strong>
+                    {% if comment.user.fname %}
+
+                    {{ comment.user.fname }} {{ comment.user.lname }}
+                            {% else %}
+                            Admin
+                            {% endif %}
+                    </strong> <small class="text-muted">- {{ comment.created_at|date:"M d, Y" }}</small></p>
                 <p>{{ comment.content }}</p>
 
                 <!-- Reply Section -->
                 <div class="replies mt-3">
                     {% for reply in comment.replies.all %}
                     <div class="reply mb-2 p-2 border-start">
-                        <p><strong>{{ reply.author.fname }} {{ reply.author.lname }}</strong> <small class="text-muted">- {{ reply.created_at|date:"M d, Y" }}</small></p>
+                        <img src="{{reply.user.picture}}" alt="{{ reply.user.fname }} " class="rounded-circle" style="width: 40px; height: 40px; cursor: pointer;" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" />
+                        <p><strong>{% if reply.user.fname %}
+
+                            {{ reply.user.fname }} {{ reply.user.lname }}
+                            {% else %}
+                            Admin
+                            {% endif %}
+                        
+                        </strong> <small class="text-muted">- {{ reply.created_at|date:"M d, Y" }}</small></p>
                         <p>{{ reply.content }}</p>
                     </div>
                     {% empty %}
@@ -131,15 +148,14 @@
                 </div>
 
                 <!-- Reply Form -->
-                <form method="post" class="mt-2">
-                    {% csrf_token %}
-                    <input type="hidden" name="parent_comment_id" value="{{ comment.id }}">
+                <div class="mt-2">
+                  
                     <div class="mb-3">
                         <label for="reply" class="form-label">Reply to this comment:</label>
-                        <textarea class="form-control" id="reply" name="reply" rows="2" placeholder="Write your reply..."></textarea>
+                        <textarea class="form-control" id="reply{{ comment.id }}" name="reply" rows="2" placeholder="Write your reply..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-secondary">Post Reply</button>
-                </form>
+                    <button onclick="addReply({{ comment.id }})" class="btn btn-secondary">Post Reply</button>
+                </div>
             </div>
             {% empty %}
             <p>No comments yet. Be the first to comment!</p>

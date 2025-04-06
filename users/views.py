@@ -116,5 +116,9 @@ def who(request):
             'lname': userw.lname,
             'pciture': userw.picture.url if userw.picture else None
         }
+        if request.user.is_superuser:
+            user_data['superuser'] = True
+        else:
+            user_data['superuser'] = False
         return JsonResponse({'response': user_data})
      

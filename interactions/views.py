@@ -4,6 +4,9 @@ from rest_framework.views import APIView
 from .models import *
 
 
+from django.http import JsonResponse
+import json
+
 class CommentAPIView(APIView):
    
     def post(self, request):
@@ -24,47 +27,36 @@ class CommentAPIView(APIView):
         """
         Update an existing comment.
         """
-        try:
-            comment = Comment.objects.get(pk=pk, user=request.user)
-        except Comment.DoesNotExist:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = CommentSerializer(comment, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+       
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, *args, **kwargs):
         """
         Delete an existing comment.
         """
-        try:
-            comment = Comment.objects.get(pk=pk, user=request.user)
-        except Comment.DoesNotExist:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-
+        
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    def get(self, request):
+        comments = Comment.objects.all()
+        comments_list = list(comments.values())  # Convert to a list of dictionaries
+        return JsonResponse(comments_list, safe=False, status=status.HTTP_200_OK)
+        # return JsonResponse({comments}, status=status.HTTP_200_OK)
+        
 
 class ReplyAPIView(APIView):
    
-    def post(self, request, comment_id, *args, **kwargs):
-        """
-        Reply to an existing comment.
-        """
-        try:
-            parent_comment = Comment.objects.get(id=comment_id)
-        except Comment.DoesNotExist:
-            return Response({"detail": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Create a new comment and set the parent as the provided comment ID
-        data = request.data.copy()
-        data['parent'] = parent_comment.id  # Set the parent field to the parent comment's ID
-        serializer = CommentSerializer(data=data)
-        
-        if serializer.is_valid():
-            serializer.save(user=request.user)  # Automatically set the user as the authenticated user
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        content = request.data.get('contents')
+        print(content,'content')
+        comment_id = request.data.get('id')
+        comment = Comment.objects.get(id=comment_id)
+        user = request.user
+        print(user,'user')
+        comment = Comment.objects.create(
+            content=content,
+            project=comment.project,
+            user=user,
+            parent=comment
+        )
+        return Response({'state': 'success'}, status=status.HTTP_201_CREATED)
