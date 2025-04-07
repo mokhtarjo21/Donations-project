@@ -38,8 +38,15 @@ class CommentAPIView(APIView):
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     def get(self, request):
+        comments_list = []
+        user = request.user
+        comments_list.append([user.picture.url,user.id])
         comments = Comment.objects.all()
-        comments_list = list(comments.values())  # Convert to a list of dictionaries
+        comments_list.append(list(comments.values()) )
+        users = User.objects.all()
+        comments_list.append(list(users.values()))
+       
+        # comments_list.append() # Convert to a list of dictionaries
         return JsonResponse(comments_list, safe=False, status=status.HTTP_200_OK)
         # return JsonResponse({comments}, status=status.HTTP_200_OK)
         
