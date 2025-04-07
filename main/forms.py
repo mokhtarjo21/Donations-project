@@ -5,8 +5,8 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['fname', 'lname', 'facebook_acount', 'Birthdate', 'phone', 'picture']
         widgets = {
-            'fname': forms.TextInput(attrs={'class': 'form-control'}),
-            'lname': forms.TextInput(attrs={'class': 'form-control'}),
+            'fname': forms.TextInput(attrs={'class': 'form-control', }),
+            'lname': forms.TextInput(attrs={'class': 'form-control', }),
             'facebook_acount': forms.URLInput(attrs={'class': 'form-control'}),
             'Birthdate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
