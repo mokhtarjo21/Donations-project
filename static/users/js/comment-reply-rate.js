@@ -49,87 +49,87 @@ function addReply(id) {
  .catch(error => console.error('Error adding reply:', error));
 }
 
-var id_project=0;
-function getComments(id) {
-    id_project = id;
-    fetch(`/interactions/${id}`)
-    .then(response => response.json())
-    .then(data => {
-        console.log('Comments:', data);
-        const commentsList = document.getElementById('comments-all');
-        commentsList.innerHTML = `
-         <div class="d-flex flex-start mt-4">
-            <img class="rounded-circle shadow-1-strong me-3" id="comment-user" src="${data[0][0]}" alt="avatar" width="65" height="65" />
-            <div class="flex-grow-1 flex-shrink-1">
-                <input type="text" id="commentv" class="form-control col-6 " rows="3" placeholder="Write your comment..."/>
-                <button  onclick="addComment(${id}) " class="btn btn-primary mt-2">Post Comment</button>
-            </div>
-         </div>
-        `;
+// var id_project=0;
+// function getComments(id) {
+//     id_project = id;
+//     fetch(`/interactions/${id}`)
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log('Comments:', data);
+//         const commentsList = document.getElementById('comments-all');
+//         commentsList.innerHTML = `
+//          <div class="d-flex flex-start mt-4">
+//             <img class="rounded-circle shadow-1-strong me-3" id="comment-user" src="${data[0][0]}" alt="avatar" width="65" height="65" />
+//             <div class="flex-grow-1 flex-shrink-1">
+//                 <input type="text" id="commentv" class="form-control col-6 " rows="3" placeholder="Write your comment..."/>
+//                 <button  onclick="addComment(${id}) " class="btn btn-primary mt-2">Post Comment</button>
+//             </div>
+//          </div>
+//         `;
 
-        // Loop through top-level comments and display them
-        data[1].filter(comment => comment.parent === null).forEach(comment => {
-            commentsList.innerHTML += `
-                <div class="d-flex flex-start mt-4">
-                    <img class="rounded-circle shadow-1-strong me-3" src="${comment.user_photo}" alt="avatar" width="65" height="65" />
-                    <div class="flex-grow-1 flex-shrink-1">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <p class="mb-1">
-                                ${comment.fname || "Admin"} <span class="small">- ${comment.created_at.slice(0, 10)}</span>
-                            </p>
-                        </div>
-                        <p class="small mb-0">${comment.content}</p>
-                    </div>
-                </div>
-                <button onclick="toggleReplies(${comment.id})" class="btn btn-primary mt-2">Show Replies</button>
-                <button onclick="togglereplyinput(${comment.id})" class="btn btn-primary mt-2"> Reply</button>
-            `;
+//         // Loop through top-level comments and display them
+//         data[1].filter(comment => comment.parent === null).forEach(comment => {
+//             commentsList.innerHTML += `
+//                 <div class="d-flex flex-start mt-4">
+//                     <img class="rounded-circle shadow-1-strong me-3" src="${comment.user_photo}" alt="avatar" width="65" height="65" />
+//                     <div class="flex-grow-1 flex-shrink-1">
+//                         <div class="d-flex justify-content-between align-items-center">
+//                             <p class="mb-1">
+//                                 ${comment.fname || "Admin"} <span class="small">- ${comment.created_at.slice(0, 10)}</span>
+//                             </p>
+//                         </div>
+//                         <p class="small mb-0">${comment.content}</p>
+//                     </div>
+//                 </div>
+//                 <button onclick="toggleReplies(${comment.id})" class="btn btn-primary mt-2">Show Replies</button>
+//                 <button onclick="togglereplyinput(${comment.id})" class="btn btn-primary mt-2"> Reply</button>
+//             `;
 
-            // Create a container for replies with initial visibility hidden
-            const repliesContainerId = `replies-${comment.id}`;
-            commentsList.innerHTML += `
-                <div id="${repliesContainerId}" style="display: none;">
-                </div>
-            `;
+//             // Create a container for replies with initial visibility hidden
+//             const repliesContainerId = `replies-${comment.id}`;
+//             commentsList.innerHTML += `
+//                 <div id="${repliesContainerId}" style="display: none;">
+//                 </div>
+//             `;
 
-            // Loop through replies to this comment and display them
-            data[1].filter(reply => reply.parent === comment.id).forEach(reply => {
-                document.getElementById(repliesContainerId).innerHTML += `
-                    <div class="d-flex flex-start mt-4 ms-5">
-                        <img class="rounded-circle shadow-1-strong me-3" src="${reply.user_photo}" alt="avatar" width="65" height="65" />
-                        <div class="flex-grow-1 flex-shrink-1">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <p class="mb-1">
-                                    ${reply.fname || "Admin"} <span class="small">- ${reply.created_at.slice(0, 10)}</span>
-                                </p>
-                            </div>
-                            <p class="small mb-0">${reply.content}</p>
-                        </div>
-                    </div>
-                `;
-            });
+//             // Loop through replies to this comment and display them
+//             data[1].filter(reply => reply.parent === comment.id).forEach(reply => {
+//                 document.getElementById(repliesContainerId).innerHTML += `
+//                     <div class="d-flex flex-start mt-4 ms-5">
+//                         <img class="rounded-circle shadow-1-strong me-3" src="${reply.user_photo}" alt="avatar" width="65" height="65" />
+//                         <div class="flex-grow-1 flex-shrink-1">
+//                             <div class="d-flex justify-content-between align-items-center">
+//                                 <p class="mb-1">
+//                                     ${reply.fname || "Admin"} <span class="small">- ${reply.created_at.slice(0, 10)}</span>
+//                                 </p>
+//                             </div>
+//                             <p class="small mb-0">${reply.content}</p>
+//                         </div>
+//                     </div>
+//                 `;
+//             });
 
-            // Add a button to toggle replies visibility
-            const repliesboxId = `repy-box-${comment.id}`;
-            commentsList.innerHTML += `
-                <div id="${repliesboxId}" style="display: none;">
-                </div>
-            `;
-            document.getElementById(repliesboxId).innerHTML += `
+//             // Add a button to toggle replies visibility
+//             const repliesboxId = `repy-box-${comment.id}`;
+//             commentsList.innerHTML += `
+//                 <div id="${repliesboxId}" style="display: none;">
+//                 </div>
+//             `;
+//             document.getElementById(repliesboxId).innerHTML += `
                 
-                <div class="d-flex flex-start mt-4 ms-5">
-                    <img class="rounded-circle shadow-1-strong me-3" src="${data[0][0]}" alt="avatar" width="65" height="65" />
-                    <div class="flex-grow-1 flex-shrink-1">
-                        <input type="text" id="reply${comment.id}" class="form-control" rows="3" placeholder="Write your reply..."/>
-                        <button onclick="addReply(${comment.id})" class="btn btn-primary mt-2">Post Reply</button>
-                    </div>
-                </div>
-            `;
-        });
+//                 <div class="d-flex flex-start mt-4 ms-5">
+//                     <img class="rounded-circle shadow-1-strong me-3" src="${data[0][0]}" alt="avatar" width="65" height="65" />
+//                     <div class="flex-grow-1 flex-shrink-1">
+//                         <input type="text" id="reply${comment.id}" class="form-control" rows="3" placeholder="Write your reply..."/>
+//                         <button onclick="addReply(${comment.id})" class="btn btn-primary mt-2">Post Reply</button>
+//                     </div>
+//                 </div>
+//             `;
+//         });
         
-    })
-    .catch(error => console.error('Error fetching comments:', error));
-}
+//     })
+//     .catch(error => console.error('Error fetching comments:', error));
+// }
 
 function toggleReplies(commentId) {
     const repliesContainer = document.getElementById(`replies-${commentId}`);
@@ -152,7 +152,7 @@ function togglereplyinput(commentId) {
         button.innerText = "cancel";
     } else {
         repliesbox.style.display = "none";
-        button.innerText = "Reply";
+        button.innerText = "Rply";
     }
 }
 

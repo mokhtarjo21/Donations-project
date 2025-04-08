@@ -81,10 +81,56 @@
         </div>
     </div>
     <hr>
-    <!-- Section Comment  -->
-    <section id="comments-all" class="gradient-custom m-auto">
-        
-
+    <section id="comments-all" class="container mt-5">
+        <!-- COMMENT FORM -->
+        <div class="d-flex align-items-start mb-4">
+            <img src="${data[0][0]}" alt="avatar" class="rounded-circle me-3" width="48" height="48">
+            <div class="flex-grow-1">
+                <input type="text" id="commentv" class="form-control rounded-pill" placeholder="Write a comment...">
+                <div class="mt-2">
+                    <button onclick="addComment(${id})" class="btn btn-sm btn-outline-primary">Post</button>
+                </div>
+            </div>
+        </div>
+    
+        <!-- SINGLE COMMENT -->
+        <div class="d-flex align-items-start mb-4">
+            <img src="${comment.user_photo}" alt="avatar" class="rounded-circle me-3" width="48" height="48">
+            <div class="flex-grow-1 bg-light p-3 rounded shadow-sm">
+                <div class="d-flex justify-content-between">
+                    <strong>${comment.fname || "Admin"}</strong>
+                    <small class="text-muted">${comment.created_at.slice(0, 10)}</small>
+                </div>
+                <p class="mb-1">${comment.content}</p>
+                <div class="d-flex gap-2">
+                    <button onclick="toggleReplies(${comment.id})" class="btn btn-sm btn-link p-0">View Replies</button>
+                    <button onclick="togglereplyinput(${comment.id})" class="btn btn-sm btn-link p-0">Reply</button>
+                </div>
+            </div>
+        </div>
+    
+        <!-- REPLY -->
+        <div class="d-flex align-items-start mb-3 ms-5">
+            <img src="${reply.user_photo}" alt="avatar" class="rounded-circle me-3" width="40" height="40">
+            <div class="flex-grow-1 bg-white border p-2 rounded">
+                <div class="d-flex justify-content-between">
+                    <strong>${reply.fname || "Admin"}</strong>
+                    <small class="text-muted">${reply.created_at.slice(0, 10)}</small>
+                </div>
+                <p class="mb-1">${reply.content}</p>
+            </div>
+        </div>
+    
+        <!-- REPLY INPUT -->
+        <div class="d-flex align-items-start ms-5 mb-4">
+            <img src="${data[0][0]}" alt="avatar" class="rounded-circle me-3" width="40" height="40">
+            <div class="flex-grow-1">
+                <input type="text" id="reply${comment.id}" class="form-control rounded-pill" placeholder="Write a reply...">
+                <div class="mt-2">
+                    <button onclick="addReply(${comment.id})" class="btn btn-sm btn-outline-primary">Post</button>
+                </div>
+            </div>
+        </div>
     </section>
     {% endblock %}
     {% block js %}
