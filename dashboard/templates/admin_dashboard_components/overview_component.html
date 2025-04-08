@@ -1,0 +1,335 @@
+
+<div class="content-header">
+    <h1>Dashboard Overview</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+        </ol>
+      </nav>
+
+    <div class="card mb-4 container-fluid">
+        <div class="card-body p-3">
+            <div class="row">
+                <div class="col-md-2 text-center border-end">
+                    <h6 class="text-muted mb-1">Total Users</h6>
+                    <h4 class="fw-bold mb-0">{{ total_users }}</h4>
+                </div>
+                <div class="col-md-2 text-center border-end">
+                    <h6 class="text-muted mb-1">Total Tags</h6>
+                    <h4 class="fw-bold mb-0">{{ total_tags }}</h4>
+                </div>
+                <div class="col-md-2 text-center border-end">
+                    <h6 class="text-muted mb-1">Total Projects</h6>
+                    <h4 class="fw-bold mb-0">{{ total_projects }}</h4>
+                </div>
+                <div class="col-md-2 text-center border-end">
+                    <h6 class="text-muted mb-1">Total Categories</h6>
+                    <h4 class="fw-bold mb-0">{{ total_categories  }}</h4>
+                </div>
+                <div class="col-md-2 text-center border-end">
+                    <h6 class="text-muted mb-1">Number of Donations</h6>
+                <h4 class="fw-bold mb-0">{{ total_donations }}</h4>
+                </div>
+                <div class="col-md-2 text-center">
+                    <h6 class="text-muted mb-1">Total Donation Amount</h6>
+                    <h4 class="fw-bold mb-0">{{ total_donation_amount|floatformat:2 }} EGP</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ################################################ -->
+
+ <!-- ############################################### -->
+TODO: MAKE EACH TABLE IN ONE LINE 
+ADD ANOTHER TABLE (THIRD TABLE) FOR THE RECENT Users
+MOVE THE TA LE OF THE USER TO THE USERS PANEL 
+ADD IS_DONE LABEL TO THE PROJECTS TABLE 
+ADD IS_FEATURED TO THE PROJECTS TABLE
+استعن بالله ولا تعجز
+
+<div class="row container-fluid">
+  <!-- Recent Projects -->
+  <div class="card">
+    <div class="card-header">Recent Projects</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 30%">Project</th>
+              <th style="width: 25%">Creator</th>
+              <th style="width: 25%">Date</th>
+              <th style="width: 20%">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for project in recent_projects %}
+            <tr>
+              <td>{{ project.title }}</td>
+              <td>{{ project.creator.fname }} {{ project.creator.lname }}</td>
+              <td>{{ project.start_time|date:"M d, Y" }}</td>
+              <td>
+                {% if project.is_featured %}
+                <span class="badge bg-success">Featured</span>
+                {% else %}-{% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center">No projects yet</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br>
+
+<!-- Recent Donations -->
+<div class="row container-fluid">
+  <div class="card">
+    <div class="card-header">Recent Donations</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 30%">User</th>
+              <th style="width: 25%">Project</th>
+              <th style="width: 25%">Amount</th>
+              <th style="width: 20%">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for donation in recent_donations %}
+            <tr>
+              <td>{{ donation.user.fname }} {{ donation.user.lname }}</td>
+              <td>{{ donation.project.title }}</td>
+              <td>${{ donation.amount|floatformat:2 }}</td>
+              <td>{{ donation.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center">No donations yet</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br> 
+<!-- ############################################### -->
+<!-- Recent Users Card -->
+<div class="card shadow mb-4 container-fluid row">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Recent Users</h6>
+      <div class="dropdown no-arrow">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-header">User Options:</div>
+          <a class="dropdown-item" href="#">View All Users</a>
+          <a class="dropdown-item" href="#">Add New User</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Export User Data</a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover" id="recentUsersTable" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Profile</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- looping from user 0 to user 4-->
+            {% for usr in recent_users|slice:":5" %}
+            <tr>
+              <td>
+                {% if usr.picture %}
+                  <img src="{{ usr.picture.url }}" alt="User" class="rounded-circle" width="40" height="40">
+                 {% else %}
+                 <img src="{{ usr.picture }}" alt="User" class="rounded-circle" width="40" height="40">
+                 {% endif %}
+              </td>
+              <td>
+                <span>{{ usr.fname }} {{ usr.lname }}</span>
+                <small class="d-block text-muted">Joined: {{ usr.date_joined|date:"M d, Y" }}</small>
+              </td>
+              <td>
+                {{ usr.email }}
+                {% if not usr.active_email %}
+                  <span class="badge bg-warning text-dark">Unverified</span>
+                {% endif %}
+              </td>
+              <td>{{ usr.phone }}</td>
+              <td>
+                {% if usr.active_email %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#userDetailModal"
+                    data-user-id="{{ usr.id }}"
+                    data-user-fname="{{ usr.fname }}"
+                    data-user-lname="{{ usr.lname }}"
+                    data-user-email="{{ usr.email }}"
+                    data-user-phone="{{ usr.phone }}"
+                    data-user-birthdate="{{ usr.Birthdate }}"
+                    data-user-picture="{{ usr.picture.url }}"
+                    data-user-active="{{ usr.active_email }}"
+                    data-user-facebook="{{ usr.facebook_acount|default:'Not provided' }}"
+                  >
+                    <i class="fas fa-eye">Details</i>
+                  </button>
+
+                  <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#userDeleteModal{{ user.id }}">
+                    <i class="fas fa-trash">Delete</i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+            
+            
+          </tbody>
+        </table>
+      </div>
+      
+    </div>
+  </div>
+  
+
+  <!-- all the modal below are hidden by default  -->
+<!--userDetails modal -->
+<div class="modal fade" id="userDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">User Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <img id="modal-picture" class="rounded-circle img-thumbnail" width="120" height="120" style="object-fit: cover; aspect-ratio: 1/1 ;">
+          <h5 class="mt-3" id="modal-fullname"></h5>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">First Name</label>
+            <p class="mb-0" id="modal-fname"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Last Name</label>
+            <p class="mb-0" id="modal-lname"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Email</label>
+            <p class="mb-0" id="modal-email"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Phone</label>
+            <p class="mb-0" id="modal-phone"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Birthdate</label>
+            <p class="mb-0" id="modal-birthdate"></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Account Status</label>
+            <p class="mb-0" id="modal-status"></p>
+          </div>
+          <div class="col-md-12 mb-3">
+            <label class="form-label text-muted small">Facebook Account</label>
+            <p class="mb-0" id="modal-facebook"></p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary">Edit User</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- #################################### -->
+
+
+ 
+  <!-- Modal -->
+<div class="modal fade" id="userEditModal{{ user.id }}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Your form or content here -->
+         {{ user.id }}
+         dsfgdfsgdf
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- javascript to fill in  the modal attribute values from the button attributes -->
+<script>
+  document.getElementById('userDetailModal').addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+  
+    // Extract data from data-* attributes
+    const fname = button.getAttribute('data-user-fname');
+    const lname = button.getAttribute('data-user-lname');
+    const email = button.getAttribute('data-user-email');
+    const phone = button.getAttribute('data-user-phone');
+    const birthdate = button.getAttribute('data-user-birthdate');
+    const picture = button.getAttribute('data-user-picture');
+    const active = button.getAttribute('data-user-active') === 'True';
+    const facebook = button.getAttribute('data-user-facebook');
+  
+    // Fill modal content
+    document.getElementById('modal-picture').src = picture;
+    document.getElementById('modal-fullname').textContent = `${fname} ${lname}`;
+    document.getElementById('modal-fname').textContent = fname;
+    document.getElementById('modal-lname').textContent = lname;
+    document.getElementById('modal-email').textContent = email;
+    document.getElementById('modal-phone').textContent = phone;
+    document.getElementById('modal-birthdate').textContent = birthdate;
+    document.getElementById('modal-facebook').textContent = facebook;
+  
+    // Badge for active email
+    const status = document.getElementById('modal-status');
+    status.innerHTML = active
+      ? '<span class="badge bg-success">Email Verified</span>'
+      : '<span class="badge bg-warning text-dark">Email Unverified</span>';
+  });
+  </script>
+  

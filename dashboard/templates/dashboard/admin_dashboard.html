@@ -1,0 +1,69 @@
+{% extends "parent.html" %}
+{% load static %}
+
+{% block style %}
+<!-- overview stylefile -->
+<link rel="stylesheet" href="{% static 'dashboard/css/overview.css' %}">
+<style>
+    body {
+        overflow-x: hidden;
+    }
+    .sidebar {
+        height: 100vh;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar text-white p-3">
+            <h4>Admin dashboard</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#overview" onclick="showContent('overview')">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#usermanagement" onclick="showContent('usermanagement')">User Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#projectmanagement" onclick="showContent('projectmanagement')">Project Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#statistics" onclick="showContent('statistics')">Statistics</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <div id="overview" class="content-section">
+                {% include "admin_dashboard_components/overview_component.html"  %}
+            </div>
+            <div id="usermanagement" class="content-section d-none">
+              {% include "admin_dashboard_components/user_management.html" %}
+            </div>
+            <div id="projectmanagement" class="content-section d-none">
+                <h2>Project Management</h2>
+                <p>We provide Django development, AI integrations, and more.</p>
+            </div>
+            <div id="statistics" class="content-section d-none">
+                <h2>Statistics</h2>
+                <p>we show statistics here</p>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    function showContent(id) {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.add('d-none');
+        });
+        document.getElementById(id).classList.remove('d-none');
+    }
+</script>
+{% endblock %}

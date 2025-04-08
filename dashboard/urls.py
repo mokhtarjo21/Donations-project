@@ -15,5 +15,8 @@ urlpatterns = [
     path('categories/delete/<int:pk>/',category_delete, name='category_delete'),
     path('projects/', project_list, name='project_list'),
     path('projects/add/', project_create, name='project_add'),
-
+    # path('admin_dashboard', AdminDashboardView.as_view(), name='admin_dashboard'),
+    # path('admin_dashboard', admin_dashboard, name='admin_dashboard'),
+    path('admin_dashboard', AdminDashboardView.as_view(), name='admin_dashboard'),
+    
 ]

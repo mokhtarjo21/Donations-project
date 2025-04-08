@@ -72,6 +72,7 @@ class HomePage(TemplateView):
 
         return context
 
+
 class ProfilePage(LoginRequiredMixin,View):
     def get(self, request):
         # Only show the logged-in user's data
