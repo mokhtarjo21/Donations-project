@@ -16,6 +16,28 @@ from .forms import UserUpdateForm
 from decimal import Decimal
 from django.db.models import Count, Sum
 from django.contrib import messages
+from django.db.models import Q
+from users.models import User 
+def search_view(request):
+    query = request.GET.get('q', '')
+    search_type = request.GET.get('type', 'projects')
+
+    results = []
+
+    if query:
+        if search_type == 'projects':
+            results = Project.objects.filter(Q(title__icontains=query) | Q(details__icontains=query))
+        elif search_type == 'categories':
+            results = Category.objects.filter(name__icontains=query)
+        elif search_type == 'people':
+            results = User.objects.filter(Q(fname__icontains=query) | Q(lname__icontains=query))
+
+    context = {
+        'query': query,
+        'type': search_type,
+        'results': results,
+    }
+    return render(request, 'components/search_results.html', context)
 @login_required
 def donate_view(request, pk):
     project = get_object_or_404(Project, pk=pk)

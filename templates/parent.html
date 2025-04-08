@@ -44,6 +44,17 @@
 
             <div id="user_info" class="d-flex align-items-center gap-2">
             </div>
+            <form method="GET" action="{% url 'search' %}" class="d-flex" role="search">
+                <input class="form-control me-2" type="search" name="q" placeholder="Search..." aria-label="Search">
+                
+                <select class="form-select me-2" name="type" style="max-width: 160px;">
+                    <option value="projects">Projects</option>
+                    <option value="categories">Categories</option>
+                    <option value="people">People</option>
+                </select>
+            
+                <button class="btn btn-outline-light" type="submit">Search</button>
+            </form>
         </div>
         
     </header>
