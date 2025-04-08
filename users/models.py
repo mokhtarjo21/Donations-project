@@ -10,7 +10,7 @@ class User(AbstractUser):
     Birthdate = models.DateTimeField(null=True, blank=True)
     phone = models.CharField(max_length=50)
     active_email = models.BooleanField(default=False)
-    picture = models.ImageField(upload_to='users/', default='default.jpg')
+    picture = models.ImageField(upload_to='users/', null=True, blank=True, default='default.jpg')
 
     def __str__(self):
         return self.fname
