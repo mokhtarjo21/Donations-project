@@ -1,5 +1,9 @@
 {% extends "parent.html" %}
 {% load static %}
+{% block style %}
+<link href="{% static 'users/css/rating.css' %}" rel="stylesheet">
+
+{% endblock %}
 {% block content %}
 <div class="container py-5">
     <h1 class="display-4">{{ project.title }}</h1>
@@ -55,62 +59,47 @@
     {% endif %}
 
     <!-- Rating Section -->
-    <div class="mt-5">
-        <h3 class="mb-3">Rate This Project</h3>
-
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="rating" class="form-label">Give a rating:</label>
-                <div id="rating" class="d-flex">
-                    <!-- Star Rating Input -->
-                    <input type="radio" id="star5" name="rating" value="5" {% if user.rating == 5 %} checked
-                        {% endif %}>
-                    <label for="star5" class="star">&#9733;</label>
-                    <input type="radio" id="star4" name="rating" value="4" {% if user.rating == 4 %} checked
-                        {% endif %}>
-                    <label for="star4" class="star">&#9733;</label>
-                    <input type="radio" id="star3" name="rating" value="3" {% if user.rating == 3 %} checked
-                        {% endif %}>
-                    <label for="star3" class="star">&#9733;</label>
-                    <input type="radio" id="star2" name="rating" value="2" {% if user.rating == 2 %} checked
-                        {% endif %}>
-                    <label for="star2" class="star">&#9733;</label>
-                    <input type="radio" id="star1" name="rating" value="1" {% if user.rating == 1 %} checked
-                        {% endif %}>
-                    <label for="star1" class="star">&#9733;</label>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Rating</button>
-        </form>
-
+    
+<div class="">
+    <h2>Rate this product</h2>
+    <div class="star-rating">
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="1"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="2"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="3"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="4"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="5"><i></i>
+    </div>
+    <div class="mt-3">
+        <span id="rating-value" class="h4">0</span> out of 5 stars
+    </div>
+</div>
         <hr>
 
         <!-- Display Average Rating -->
-        <div class="mt-4">
-            <h4>Average Rating: </h4>
-            {% if project.average_rating %}
-            <div class="d-flex">
-                {% for i in 1..5 %}
-                <span
-                    class="star {% if project.average_rating >= i %}text-warning{% else %}text-muted{% endif %}">&#9733;</span>
-                {% endfor %}
-            </div>
-            <p>{{ project.average_rating }} / 5</p>
-            {% else %}
-            <p>No ratings yet. Be the first to rate!</p>
-            {% endif %}
+        <div id="rates-all" class="mt-4">
+            
         </div>
     </div>
+    <hr>
     <!-- Section Comment  -->
-    <section id="comments-all" class="gradient-custom">
+    <section id="comments-all" class="gradient-custom m-auto">
         
 
     </section>
-    <script>
-        
-    </script>
     {% endblock %}
     {% block js %}
-    <script src="{% static 'users/js/comment-reply.js'%}"></script>
+    <script src="{% static 'users/js/comment-reply-rate.js'%}"></script>
+    <script>
+        getComments({{ project.id }});
+        getRates({{ project.id }});
+        const starRating = document.querySelector('.star-rating');
+        const ratingValue = document.getElementById('rating-value');
+
+        starRating.addEventListener('change', function(e) {
+            ratingValue.textContent = e.target.value;
+        });
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mdbootstrap@5.2.0/js/mdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@5.2.0/js/mdb.min.js"></script>
+
     {% endblock %}

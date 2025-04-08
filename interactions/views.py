@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 
-
+import copy
 from django.http import JsonResponse
 import json
 
@@ -37,17 +37,29 @@ class CommentAPIView(APIView):
         
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    def get(self, request):
+    def get(self, request,id):
         
+       
         comments_list = []
+        comment_dict =[]
         user = request.user
         comments_list.append([user.picture.url,user.id])
-        comments = Comment.objects.all()
-        comments_list.append(list(comments.values()) )
-        users = User.objects.all()
-        comments_list.append(list(users.values()))
-       
-        # comments_list.append() # Convert to a list of dictionaries
+        comments = Comment.objects.filter(project=id)
+        for comment in comments:
+            user_profile = User.objects.get(id=comment.user.id)
+            comment_dict.append( {
+                'id': comment.id,  # Include the comment ID or any other fields you need
+                'fname': user_profile.fname,
+                'user_photo': user_profile.picture.url,
+                'content': comment.content,
+                # 'parent':comment.parent,
+                'created_at': comment.created_at,
+                'parent': comment.parent.id if comment.parent else None,  # Check if the comment has a parent
+            })
+            
+        # Add the comment dictionary to the list
+        comments_list.append(comment_dict)
+        
         return JsonResponse(comments_list, safe=False, status=status.HTTP_200_OK)
         # return JsonResponse({comments}, status=status.HTTP_200_OK)
         
@@ -68,3 +80,33 @@ class ReplyAPIView(APIView):
             parent=comment
         )
         return Response({'state': 'success'}, status=status.HTTP_201_CREATED)
+class RateAPIView(APIView):
+    def post(self, request):
+        rate = request.data.get('rate')
+        user = request.user
+        project_id = request.data.get('id')
+        if Rating.objects.filter(user=user.id,project=project_id ).exists():
+            current_rete = Rating.objects.get(user=user.id,project=project_id )
+            current_rete.value = rate
+            current_rete.save()
+        else :
+            project = Project.objects.get(id=project_id)
+            new_rate = Rating.objects.create(
+                user=user,
+                project=project,
+                value=rate
+            )
+        return Response({'state': 'success'}, status=status.HTTP_201_CREATED)
+    def get(self, request, id):
+        rates = Rating.objects.filter(project=id)
+        rate_list = []
+        for rate in rates:
+            user_profile = User.objects.get(id=rate.user.id)
+            rate_list.append({
+                'id': rate.id,
+                'fname': user_profile.fname,
+                'user_photo': user_profile.picture.url,
+                'rate': rate.value
+            })
+       
+        return JsonResponse(rate_list, safe=False, status=status.HTTP_200_OK)
