@@ -38,6 +38,7 @@ class CommentAPIView(APIView):
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     def get(self, request):
+        
         comments_list = []
         user = request.user
         comments_list.append([user.picture.url,user.id])

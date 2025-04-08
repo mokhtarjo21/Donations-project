@@ -41,6 +41,7 @@ class ProjectDetailView(LoginRequiredMixin,DetailView):
     model = Project
     template_name = 'components/project_detail.html'  
     context_object_name = 'project'
+    
 
 class HomePage(TemplateView):
     template_name = 'main/home.html'
