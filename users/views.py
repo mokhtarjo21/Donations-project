@@ -122,3 +122,14 @@ def who(request):
             user_data['superuser'] = False
         return JsonResponse({'response': user_data})
      
+@api_view(['POST'])
+def delete_user(request):
+    user = request.user
+    password = request.data.get('password')
+    if user.password == password:
+        use=User.objects.get(id=user.id)
+        use.delete()
+        logout(request)
+        return JsonResponse({'response': {'state': True}})
+    else:
+        return JsonResponse({'response': {'state': False}})

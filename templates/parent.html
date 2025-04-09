@@ -42,8 +42,6 @@
                 </ul>
             </nav>
 
-            <div id="user_info" class="d-flex align-items-center gap-2">
-            </div>
             <form method="GET" action="{% url 'search' %}" class="d-flex" role="search">
                 <input class="form-control me-2" type="search" name="q" placeholder="Search..." aria-label="Search">
                 
@@ -52,9 +50,11 @@
                     <option value="categories">Categories</option>
                     <option value="people">People</option>
                 </select>
-            
+                
                 <button class="btn btn-outline-light" type="submit">Search</button>
             </form>
+            <div id="user_info" class="d-flex align-items-center gap-2">
+            </div>
         </div>
         
     </header>

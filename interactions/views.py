@@ -68,11 +68,11 @@ class ReplyAPIView(APIView):
    
     def post(self, request):
         content = request.data.get('contents')
-        print(content,'content')
+        
         comment_id = request.data.get('id')
         comment = Comment.objects.get(id=comment_id)
         user = request.user
-        print(user,'user')
+        
         comment = Comment.objects.create(
             content=content,
             project=comment.project,
