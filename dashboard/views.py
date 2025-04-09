@@ -110,19 +110,21 @@ from django.views.generic import TemplateView
 from django.db.models import Count, Sum
 from django.utils import timezone
 from datetime import timedelta
-
+import math
 from users.models import User
 from dashboard.models import Project, Category, Tag
 from interactions.models import Donation, Comment, Rating, Report
 
+# Add custom template filter for range
+from django.template.defaulttags import register
+
 @method_decorator(staff_member_required, name='dispatch')
-class AdminDashboardView(TemplateView):
+class AdminDashboardView(View):
     """Admin dashboard view showing project statistics and management options"""
     template_name = 'dashboard/admin_dashboard.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
+    def get(self, request):
+
+        context = {}
         # getting counts for main entities
         context['total_users'] = User.objects.count()
         context['total_projects'] = Project.objects.count()
@@ -166,4 +168,67 @@ class AdminDashboardView(TemplateView):
             date_joined__gte=thirty_days_ago
         ).count()
         
-        return context
+
+        # adding chunks for the users_management component 
+
+        user_chunks = []
+        page_size = 6
+        user_count = context['total_users']
+        # fetching the users with their related donations if exists
+        users = User.objects.all().order_by('-date_joined').prefetch_related(
+            'donations',
+            'donations__project'  # This prefetches the related project objects
+        )
+
+        # Now attach donation history with specific fields to each user
+        for user in users:
+            donations_list = list(user.donations.all().order_by('-created_at'))
+            
+            if donations_list:
+                # Create a structured donation history with the fields you want
+                user.donation_history = [
+                    {
+                        'amount': donation.amount,
+                        'created_at': donation.created_at,
+                        'project_id': donation.project.id,
+                        'project_title': donation.project.title,
+                        'project_details': donation.project.details
+                    }
+                    for donation in donations_list
+                ]
+            else:
+                user.donation_history = None
+
+        for i in range(0, user_count, page_size):
+            user_chunks.append(users[i: i+page_size])
+        context['user_chunks'] = user_chunks
+
+        print("x"*60)
+        print(context['user_chunks'][0][4].donation_history)
+        print("x"*60)
+        ##################################################
+
+        
+
+        @register.filter
+        def rerange(value):
+            return range(value)
+            
+
+        return render(request, self.template_name, context)
+    
+
+# #### trying to implement the edit user data page
+# class EditUserData(LoginRequiredMixin, UpdateView): 
+#     def get(self, request):
+#         return render(request, 'dacshboard/edit_user_data.html')
+    
+# class EditProfile(LoginRequiredMixin, UpdateView):
+#     model = User
+#     template_name = "main/edit_profile.html"
+#     form_class = UserUpdateForm  
+#     success_url = reverse_lazy("profile") 
+
+#     # to edit the current user rather than passing the user pk in the url 
+#     def get_object(self, queryset=None):
+#         return self.request.user

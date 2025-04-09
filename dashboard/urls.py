@@ -18,5 +18,6 @@ urlpatterns = [
     # path('admin_dashboard', AdminDashboardView.as_view(), name='admin_dashboard'),
     # path('admin_dashboard', admin_dashboard, name='admin_dashboard'),
     path('admin_dashboard', AdminDashboardView.as_view(), name='admin_dashboard'),
+    path('edit_user_data', AdminDashboardView.as_view(), name='admin_dashboard'),
     
 ]
