@@ -5,8 +5,7 @@
 <div class="container mt-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">🚀 Projects</h2>
-   <a href="{% url 'project_add' %}" class="btn btn-primary">➕ Add New Project</a>
-
+    <a href="{% url 'project_add' %}" class="btn btn-primary">➕ Add New Project</a>
   </div>
 
   <div class="card shadow border-0">
@@ -23,6 +22,7 @@
             <th scope="col">💰 Raised</th>
             <th scope="col">⏰ Start</th>
             <th scope="col">📅 End</th>
+            <th scope="col">⚙️ Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -41,10 +41,15 @@
             <td>${{ project.current_amount }}</td>
             <td>{{ project.start_time|date:"Y-m-d H:i" }}</td>
             <td>{{ project.end_time|default:"-" }}</td>
+            <td>
+              <a href="{% url 'project_edit' project.id %}" class="btn btn-sm btn-warning">✏️ Edit</a>
+              <a href="{% url 'project_delete' project.id %}" class="btn btn-sm btn-danger">🗑️ Delete</a>
+            </td>
+            
           </tr>
           {% empty %}
           <tr>
-            <td colspan="9" class="text-center text-muted py-4">🚫 No projects found.</td>
+            <td colspan="10" class="text-center text-muted py-4">🚫 No projects found.</td>
           </tr>
           {% endfor %}
         </tbody>

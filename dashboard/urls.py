@@ -15,5 +15,7 @@ urlpatterns = [
     path('categories/delete/<int:pk>/',category_delete, name='category_delete'),
     path('projects/', project_list, name='project_list'),
     path('projects/add/', project_create, name='project_add'),
+    path('projects/<int:pk>/edit/', project_edit, name='project_edit'),
+     path('projects/<int:pk>/delete/', project_delete, name='project_delete'),
 
 ]

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'chatgpt.apps.ChatgptConfig',
     'dashboard.apps.DashboardConfig',
     'interactions.apps.InteractionsConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
