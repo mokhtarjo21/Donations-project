@@ -1,0 +1,110 @@
+
+{% extends 'parent.html' %}
+
+
+
+{% load static %}
+{% block content %}
+<div class="report-detail row  w-75 m-auto p-4 ">
+
+
+    <div class="card text-bg-light mb-3 col-6" >
+        <div class="card-header">User Info</div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>User ID:</span> 
+                  <span>{{ report.user.id }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Name:</span> 
+                  <span>{{ report.user.fname }} {{ report.user.lname }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Email:</span> 
+                  <span>{{ report.user.email }}</span>
+                </li>
+            </ul>
+              
+        </div>
+      </div>
+      {% if report.get_report_type_display == 'Project' %}
+      <div class="card text-bg-light mb-3 col-6" >
+        <div class="card-header">Project Info</div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Project ID:</span> 
+                  <span>{{ report.user.id }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Title:</span> 
+                  <span>{{ report.user.fname }} {{ report.user.lname }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Owner ID:</span> 
+                  <span>{{report.user.id}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Owner full-name:</span> 
+                  <span>{{ report.user.fname}} {{report.user.lname }}</span>
+                </li>
+            </ul>
+              
+        </div>
+      </div>
+      {% else %}
+      <div class="card text-bg-light mb-3 col-6" >
+        <div class="card-header">Comment Info</div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Comment ID:</span> 
+                  <span>{{ report.comment.id }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Comment By:</span> 
+                  <span>{{ report.user.fname }} {{ report.user.lname }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Content:</span> 
+                  <textarea id="commentContent" class="form-control m-4" rows="3" readonly>
+                      {{ report.comment.content }}
+                  </textarea>
+                </li>
+            </ul>
+              
+        </div>
+      </div>
+
+{% endif %}
+
+
+<div class="card text-bg-light mb-3 col-12" >
+    <div class="card-header">Reason for report</div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <span>{{ report.reason }}</span>
+            </li>
+        </ul>
+        <div class=" d-flex justify-content-around mt-4 w-50 m-auto" role="group" aria-label="User actions">
+                {% if not report.is_resolved %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="resolve" class="btn btn-success">Mark as Resolved</button>
+                </form>
+                {% endif %}
+                
+                <form method="post" onsubmit="return confirm('Are you sure you want to delete this report?');">
+                    {% csrf_token %}
+                    <button type="submit" name="delete" class="btn btn-danger">Delete Report</button>
+                </form>
+                
+                <a href="{% url 'admin_dashboard' }" class="btn btn-secondary">Go Back</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+

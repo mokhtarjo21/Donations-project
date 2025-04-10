@@ -27,7 +27,6 @@ class User(AbstractUser):
             
         super().save(*args, **kwargs)
 
-
 class User_active(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     active = models.CharField(max_length=50)

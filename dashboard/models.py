@@ -49,6 +49,7 @@ class Project(models.Model):
     # Time information
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
+    is_featured = models.BooleanField(default=False)
     
     
     def __str__(self):

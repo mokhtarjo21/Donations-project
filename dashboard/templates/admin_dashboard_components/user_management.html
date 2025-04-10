@@ -1,0 +1,307 @@
+<!-- File: admin_dashboard_components/user_management.html -->
+<div class="user-management-container">
+    <h2>User Management</h2>
+    
+    <!-- <div class="user-actions">
+
+      <button class="action-button">Export User Data</button>
+    </div> -->
+    
+    <div class="card shadow mb-4 container-fluid row">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">Recent Users</h6>
+          <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+              <div class="dropdown-header">User Options:</div>
+              <a class="dropdown-item" href="{% url 'export_users' %}">Export User Data</a>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover" id="recentUsersTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th>Profile</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody">
+                <!-- Table content will be loaded by JavaScript -->
+                <!-- Initial load of first page -->
+                {% if user_chunks.0 %}
+                  {% for usr in user_chunks.0 %}
+                  <tr>
+                    <td>
+                      {% if usr.picture %}
+                        <img src="{{ usr.picture.url }}" alt="User" class="rounded-circle" width="40" height="40">
+                      {% else %}
+                        <img src="{{ usr.picture }}" alt="User" class="rounded-circle" width="40" height="40">
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span>{{ usr.fname }} {{ usr.lname }}</span>
+                      <small class="d-block text-muted">Joined: {{ usr.date_joined|date:"M d, Y" }}</small>
+                    </td>
+                    <td>
+                      {{ usr.email }}
+                      {% if not usr.active_email %}
+                        <span class="badge bg-warning text-dark">Unverified</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ usr.phone }}</td>
+                    <td>
+                      {% if usr.active_email %}
+                        <span class="badge bg-success">Active</span>
+                      {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#userDetailModal"
+                          data-user-id="{{ usr.id }}"
+                          data-user-fname="{{ usr.fname }}"
+                          data-user-lname="{{ usr.lname }}"
+                          data-user-email="{{ usr.email }}"
+                          data-user-phone="{{ usr.phone }}"
+                          data-user-birthdate="{{ usr.Birthdate }}"
+                          data-user-picture="{{ usr.picture.url }}"
+                          data-user-active="{{ usr.active_email }}"
+                          data-user-facebook="{{ usr.facebook_acount|default:'Not provided' }}"
+                        >
+                          <i class="fas fa-eye">Details</i>
+                        </button>
+      
+                        <button 
+                            type="button" 
+                            class="btn btn-sm btn-outline-primary" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#userDonationModal"
+                            data-user-id="{{ usr.id }}"
+                            data-user-donationHistory="{{ usr.donation_history }}"
+                            data-user-picture="{{ usr.picture.url }}"
+                            data-user-fullname="{{usr.fname}} {{ usr.lname }}"
+                        >
+                          <i class="fas fa-trash">Donations</i>
+                        </button>
+                       
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="6" class="text-center">No users found</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <span class="text-muted small" id="paginationInfo">Showing 1-{{ user_chunks.0|length }} of {{ total_users }} users</span>
+            <nav aria-label="User navigation">
+              <ul class="pagination pagination-sm mb-0" id="userPagination">
+                <li class="page-item disabled">
+                  <a class="page-link" href="javascript:void(0)" onclick="changePage('prev')">Previous</a>
+                </li>
+                
+                {% for i in user_chunks|length|rerange %}
+                <li class="page-item {% if forloop.first %}active{% endif %}">
+                  <a class="page-link" href="javascript:void(0)" onclick="changePage({{ forloop.counter0 }})">{{ forloop.counter }}</a>
+                </li>
+                {% endfor %}
+                
+                <li class="page-item {% if user_chunks|length <= 1 %}disabled{% endif %}">
+                  <a class="page-link" href="javascript:void(0)" onclick="changePage('next')">Next</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+    </div>
+</div>
+
+<script>
+    // Store user chunks as a JavaScript variable
+    const userChunks = [
+        {% for chunk in user_chunks %}
+            [
+                {% for user in chunk %}
+                    {
+                        id: {{ user.id }},
+                        fname: "{{ user.fname }}",
+                        lname: "{{ user.lname }}",
+                        email: "{{ user.email }}",
+                        phone: "{{ user.phone|default:'N/A' }}",
+                        date_joined: "{{ user.date_joined|date:'M d, Y' }}",
+                        picture: "{{ user.picture.url|default:'#' }}", //here we selected the url so, just use it directly in the chagnePage function
+                        active_email: {% if user.active_email %}true{% else %}false{% endif %},
+                        facebook_account: "{{ user.facebook_acount|default:'Not provided' }}",
+                        Birthdate: "{{ user.Birthdate|date:'M d, Y' }}",
+                        donation_history: "{{ user.donation_history|default:'N/A' }}"
+                    }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Current page index
+    let currentPage = 0;
+    const totalPages = userChunks.length;
+    const totalUsers = {{ total_users }};
+    
+    // Function to change page
+    function changePage(page) {
+        // Handle prev/next navigation
+        if (page === 'prev') {
+            if (currentPage > 0) {
+                currentPage--;
+            } else {
+                return; // Already at first page
+            }
+        } else if (page === 'next') {
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+            } else {
+                return; // Already at last page
+            }
+        } else {
+            // Direct page number
+            currentPage = parseInt(page);
+        }
+        
+        // Update pagination active state
+        document.querySelectorAll('#userPagination .page-item').forEach((item, index) => {
+            // Skip first (prev) and last (next) items
+            if (index === 0 || index === document.querySelectorAll('#userPagination .page-item').length - 1) {
+                return;
+            }
+            
+            // Check if this is the current page (adjust for prev button)
+            if (index - 1 === currentPage) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Enable/disable prev/next buttons
+        const prevButton = document.querySelector('#userPagination .page-item:first-child');
+        const nextButton = document.querySelector('#userPagination .page-item:last-child');
+        
+        if (currentPage === 0) {
+            prevButton.classList.add('disabled');
+        } else {
+            prevButton.classList.remove('disabled');
+        }
+        
+        if (currentPage === totalPages - 1) {
+            nextButton.classList.add('disabled');
+        } else {
+            nextButton.classList.remove('disabled');
+        }
+        
+        // Update table content
+        updateUserTable();
+        
+        // Update pagination info
+        updatePaginationInfo();
+    }
+    
+    // Function to update the user table with current page data
+    function updateUserTable() {
+        const tbody = document.getElementById('userTableBody');
+        const chunk = userChunks[currentPage];
+        
+        if (!chunk || chunk.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No users found</td></tr>';
+            return;
+        }
+        
+        let html = '';
+        chunk.forEach(user => {
+            html += `
+                <tr>
+                    <td>
+                        <img src="${user.picture}" alt="User" class="rounded-circle" width="40" height="40">
+                    </td>
+                    <td>
+                        <span>${user.fname} ${user.lname}</span>
+                        <small class="d-block text-muted">Joined: ${user.date_joined}</small>
+                    </td>
+                    <td>
+                        ${user.email}
+                        ${!user.active_email ? '<span class="badge bg-warning text-dark">Unverified</span>' : ''}
+                    </td>
+                    <td>${user.phone}</td>
+                    <td>
+                        ${user.active_email ? 
+                            '<span class="badge bg-success">Active</span>' : 
+                            '<span class="badge bg-secondary">Inactive</span>'}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#userDetailModal"
+                                data-user-id="${user.id}"
+                                data-user-fname="${user.fname}"
+                                data-user-lname="${user.lname}"
+                                data-user-email="${user.email}"
+                                data-user-phone="${user.phone}"
+                                data-user-picture="${user.picture}"
+                                data-user-active="${user.active_email}"
+                                data-user-facebook="${user.facebook_account}"
+                                data-user-birthdate="${user.Birthdate}"
+                            >
+                                <i class="fas fa-eye">Details</i>
+                            </button>
+                            <button 
+                                type="button" 
+                                class="btn btn-sm btn-outline-primary" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#userDonationModal"
+                                data-user-id="${user.id}"
+                                data-user-donationHistory="${user.donation_history}"
+                                data-user-picture="${user.picture}"
+                                data-user-fullname="${user.fname} ${user.lname}"
+                            >
+                              <i class="fas fa-trash">Donations</i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = html;
+    }
+    
+    // Update the pagination info text (Showing X-Y of Z users)
+    function updatePaginationInfo() {
+        const infoElement = document.getElementById('paginationInfo');
+        const pageSize = userChunks[currentPage] ? userChunks[currentPage].length : 0;
+        const start = pageSize > 0 ? currentPage * pageSize + 1 : 0;
+        const end = Math.min(start + pageSize - 1, totalUsers);
+        
+        infoElement.textContent = `Showing ${start}-${end} of ${totalUsers} users`;
+    }
+</script>
+
+<!-- Bootstrap 5 Bundle  -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
