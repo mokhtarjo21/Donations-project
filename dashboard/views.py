@@ -7,6 +7,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test
 from .forms import *
 # 
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from .models import Project
+from .forms import ProjectForm  
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+
 # You'll create this form
 from .models import Category
 from .models import Tag 
@@ -53,20 +62,40 @@ def category_delete(request, pk):
 
 
 
+
+#manage Projects
+
+
+@login_required
 def project_list(request):
-    projects = Project.objects.select_related('category', 'creator').prefetch_related('tags').all()
+    projects = Project.objects.select_related('category', 'creator') \
+        .prefetch_related('tags') \
+        .filter(creator=request.user)  
+
     return render(request, 'dashboard/project_list.html', {'projects': projects})
+
+
+
+
 
 @login_required
 def project_create(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
+        images = request.FILES.getlist('images')  
+
         if form.is_valid():
-            project = form.save(commit=False)  
-            project.creator = request.user  
+          
+            project = form.save(commit=False)
+            project.creator = request.user
             project.save()
-            form.save_m2m()  
+            form.save_m2m()
+
+            for image in images:
+                ProjectPictures.objects.create(project=project, image=image)
+
             return redirect('project_list')
+
     else:
         form = ProjectForm()
 
@@ -78,3 +107,41 @@ def project_create(request):
         'categories': categories,
         'tags': tags,
     })
+
+
+
+
+
+@login_required
+def project_edit(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+
+    if project.creator != request.user:
+        return HttpResponseForbidden("❌ You are not allowed to edit this project.")
+
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            return redirect('project_list')
+    else:
+        form = ProjectForm(instance=project)
+
+    return render(request, 'dashboard/project_form.html', {
+        'form': form,
+        'categories': Category.objects.all(),
+        'tags': Tag.objects.all(),
+    })
+
+
+
+
+
+def project_delete(request, pk):
+    project = get_object_or_404(Project, pk=pk) 
+    if request.method == 'POST':
+        project.delete()
+        return redirect('project_list')
+    return render(request, 'dashboard/project_confirm_delete.html', {'project': project})
+
+    
