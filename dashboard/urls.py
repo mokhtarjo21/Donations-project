@@ -18,6 +18,9 @@ urlpatterns = [
     # path('admin_dashboard', AdminDashboardView.as_view(), name='admin_dashboard'),
     # path('admin_dashboard', admin_dashboard, name='admin_dashboard'),
     path('admin_dashboard', AdminDashboardView.as_view(), name='admin_dashboard'),
-    path('edit_user_data', AdminDashboardView.as_view(), name='admin_dashboard'),
+    # path('edit_user_data', AdminDashboardView.as_view(), name='admin_dashboard'),
+    path('export-users/', export_users_csv, name='export_users'),
+
+    path('reports/<int:pk>/', ReportDetailView.as_view(), name='report_detail'),
     
 ]

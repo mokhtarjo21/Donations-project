@@ -106,7 +106,9 @@ def project_create(request):
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.urls import reverse_lazy
 from django.db.models import Count, Sum
 from django.utils import timezone
 from datetime import timedelta
@@ -114,6 +116,7 @@ import math
 from users.models import User
 from dashboard.models import Project, Category, Tag
 from interactions.models import Donation, Comment, Rating, Report
+from interactions.models import *
 
 # Add custom template filter for range
 from django.template.defaulttags import register
@@ -214,6 +217,9 @@ class AdminDashboardView(View):
         def rerange(value):
             return range(value)
             
+        # passing the reports
+        context['reports'] = Report.objects.all()
+
 
         return render(request, self.template_name, context)
     
@@ -232,3 +238,53 @@ class AdminDashboardView(View):
 #     # to edit the current user rather than passing the user pk in the url 
 #     def get_object(self, queryset=None):
 #         return self.request.user
+
+
+
+# In order to export the users data to a csv file
+import csv
+from django.http import HttpResponse
+
+def export_users_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="users.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Birthdate', 'Facebook Account', 'Active Email'])
+    print("x"*60)
+    print(User.objects.all())
+    print("x"*60)
+    for user in User.objects.all():
+        print(user)
+        writer.writerow([user.id, user.fname, user.lname, user.email, user.phone, user.Birthdate, user.facebook_acount, user.active_email])
+
+    return response
+
+
+# creating a view to handle the report  database 
+from django.views.generic import DetailView
+
+class ReportDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Report
+    template_name = 'reports/report_detail.html'
+    context_object_name = 'report'
+    
+    # Only allow staff/admin to access this view
+    def test_func(self):
+        return self.request.user.is_staff
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        # Handle delete request
+        if 'delete' in request.POST:
+            self.object.delete()
+            return redirect('admin_dashboard')
+        
+        # Handle resolve request
+        elif 'resolve' in request.POST:
+            self.object.is_resolved = True
+            self.object.save()
+            return redirect('admin_dashboard')
+            
+        return self.get(request, *args, **kwargs)
