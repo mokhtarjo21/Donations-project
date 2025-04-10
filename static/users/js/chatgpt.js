@@ -1,6 +1,6 @@
 const chatContainer = document.getElementById("chat-messages");
 const userInput = document.getElementById("chat-input");
-// الحصول على CSRF token من الكوكيز
+
 const getCookie = (name) => {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -17,7 +17,7 @@ const getCookie = (name) => {
 };
 
 const csrfToken = getCookie('csrftoken');
-console.log(csrfToken + " csrfToken");
+
 
 userInput.addEventListener("keypress", function (e) {
     if (e.key === "Enter" && !e.shiftKey) {

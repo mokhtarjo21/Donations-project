@@ -110,3 +110,37 @@ class RateAPIView(APIView):
             })
        
         return JsonResponse(rate_list, safe=False, status=status.HTTP_200_OK)
+
+class Report_Comment_Project(APIView):
+    def post(self, request):
+        report_type=request.data.get('type')
+        if report_type == 'Comment':
+            content = request.data.get('content')
+            comment_id = request.data.get('id')
+            comment = Comment.objects.get(id=comment_id)
+            user = request.user
+            report = Report.objects.create(
+            reason=content,
+            report_type='comment',
+            user=user,
+            comment=comment
+            )
+            return Response({'state': 'success'}, status=status.HTTP_201_CREATED)
+        elif report_type == 'Project':
+            content = request.data.get('content')
+            print
+            project_id = request.data.get('id')
+            print(project_id)
+            project = Project.objects.get(id=project_id)
+            user = request.user
+            report = Report.objects.create(
+            reason=content,
+            report_type='project',
+            user=user,
+            project=project
+            )
+            return Response({'state': 'success'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'error': 'Invalid type'}, status=status.HTTP_400_BAD_REQUEST)
+        
+

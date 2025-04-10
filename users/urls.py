@@ -9,5 +9,6 @@ urlpatterns = [
     path('active/<int:id>', active, name='active'),
     path ('who', who, name='who'),
     path('delete', delete_user, name='delete'),
+    path('tempreport', tempreport, name='delete'),
   
 ]

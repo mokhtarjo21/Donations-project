@@ -76,9 +76,10 @@ function getComments(id) {
                 <div class="d-flex justify-content-between">
                     <strong>${comment.fname || "Admin"}</strong>
                     <small class="text-muted">${comment.created_at.slice(0, 10)}</small>
-                </div>
-                <p class="mb-1">${comment.content}</p>
-                <div class="d-flex gap-2">
+                    </div>
+                    <p class="mb-1">${comment.content}</p>
+                    <div class="d-flex gap-2">
+                    <button onclick="report(${comment.id},'Comment')" class="btn btn-sm btn-link p-0">Report</button>
                     <button onclick="toggleReplies(${comment.id})" class="btn btn-sm btn-link p-0">View Replies</button>
                     <button onclick="togglereplyinput(${comment.id})" class="btn btn-sm btn-link p-0">Reply</button>
                 </div>
@@ -101,8 +102,10 @@ function getComments(id) {
                 <div class="d-flex justify-content-between">
                     <strong>${reply.fname || "Admin"}</strong>
                     <small class="text-muted">${reply.created_at.slice(0, 10)}</small>
-                </div>
+                    </div>
+                    
                 <p class="mb-1">${reply.content}</p>
+                <button onclick="report(${reply.id},'Comment')" class="btn btn-sm btn-link p-0">Report</button>
             </div>
         </div>
                 `;
@@ -201,3 +204,16 @@ function getRates(id) {
         });
          // Clear the existing comments
     });}
+
+function report(id,type){
+    const width = 500;
+    const height = 400;
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+
+    window.open(
+      `/users/tempreport?id=${id}&type=${type}`,
+      'Report '+type,
+      `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=yes`
+    );
+}

@@ -133,3 +133,8 @@ def delete_user(request):
         return JsonResponse({'response': {'state': True}})
     else:
         return JsonResponse({'response': {'state': False}})
+
+def tempreport(request):
+    reason = request.GET.get('type')
+    return render(request, 'users/report.html',{'type': reason})
+    
