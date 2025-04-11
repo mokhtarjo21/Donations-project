@@ -1,5 +1,39 @@
 {% extends "parent.html" %}
 {% load static %}
+{% block style %}
+<link href="{% static 'users/css/rating.css' %}" rel="stylesheet">
+<script src="{% static 'users/jquery-3.7.1.min.js' %}"></script>
+<style>
+    #next,#prev{
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        background-color: #000;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+    }
+    .imgphoto:hover{
+      transform: scale(2) ;
+      z-index: 50;
+    }
+    .imgphoto{
+        transition:transform 2s;
+        margin: 10px;
+    }
+    .next{
+       
+        right: 0;
+    }
+    .prev{
+       
+        left: 0;
+    }
+    
+</style>
+{% endblock %}
 {% block content %}
 <div class="container py-5">
     <h1 class="display-4">{{ project.title }}</h1>
@@ -9,7 +43,8 @@
         <div class="row">
             {% for picture in project.projectpictures_set.all %}
             <div class="col-md-4">
-                <img src="{{ picture.image.url }}" class="img-fluid mb-2" alt="{{ project.title }}" style="max-height: 300px; object-fit: cover;">
+                
+                    <img  class="img-fluid mb-2 imgphoto" src="{{ picture.image.url }}" alt="{{ project.title }}" width="200px" height="200px">
             </div>
             {% endfor %}
         </div>
@@ -22,7 +57,10 @@
             <p class="card-text">{{ project.details }}</p>
         </div>
     </div>
-
+    <button class="next" id="next" onclick="next()">Next</button>
+    <button class="prev" id="prev" onclick="Previos()">Previos</button>
+    
+    <div id="divphoto"></div>
     <div class="row">
         <div class="col-md-6">
             <p><strong>Category:</strong> {{ project.category.name }}</p>
@@ -36,6 +74,7 @@
                 <span class="text-muted">No tags</span>
                 {% endfor %}
             </p>
+            <button onclick="report({{project.id}},'Project')" class="btn btn-sm btn-outline-primary">report</button>
         </div>
     </div>
 
@@ -54,116 +93,109 @@
     {% endif %}
 
     <!-- Rating Section -->
-    <div class="mt-5">
-        <h3 class="mb-3">Rate This Project</h3>
-        
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="rating" class="form-label">Give a rating:</label>
-                <div id="rating" class="d-flex">
-                    <!-- Star Rating Input -->
-                    <input type="radio" id="star5" name="rating" value="5" {% if user.rating == 5 %} checked {% endif %}>
-                    <label for="star5" class="star">&#9733;</label>
-                    <input type="radio" id="star4" name="rating" value="4" {% if user.rating == 4 %} checked {% endif %}>
-                    <label for="star4" class="star">&#9733;</label>
-                    <input type="radio" id="star3" name="rating" value="3" {% if user.rating == 3 %} checked {% endif %}>
-                    <label for="star3" class="star">&#9733;</label>
-                    <input type="radio" id="star2" name="rating" value="2" {% if user.rating == 2 %} checked {% endif %}>
-                    <label for="star2" class="star">&#9733;</label>
-                    <input type="radio" id="star1" name="rating" value="1" {% if user.rating == 1 %} checked {% endif %}>
-                    <label for="star1" class="star">&#9733;</label>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Rating</button>
-        </form>
-
+    
+<div class="">
+    <h2>Rate this product</h2>
+    <div class="star-rating">
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="1"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="2"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="3"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="4"><i></i>
+        <input type="radio" onclick="addRate({{project.id}},value)" name="rating" value="5"><i></i>
+    </div>
+    <div class="mt-3">
+        <span id="rating-value" class="h4">0</span> out of 5 stars
+    </div>
+</div>
         <hr>
 
         <!-- Display Average Rating -->
-        <div class="mt-4">
-            <h4>Average Rating: </h4>
-            {% if project.average_rating %}
-            <div class="d-flex">
-                {% for i in 1..5 %}
-                <span class="star {% if project.average_rating >= i %}text-warning{% else %}text-muted{% endif %}">&#9733;</span>
-                {% endfor %}
-            </div>
-            <p>{{ project.average_rating }} / 5</p>
-            {% else %}
-            <p>No ratings yet. Be the first to rate!</p>
-            {% endif %}
+        <div id="rates-all" class="mt-4">
+            
         </div>
     </div>
-
-    <!-- Comments Section -->
-    <div class="mt-5">
-        <h3 class="mb-3">Comments</h3>
-
-        <!-- Comment Form -->
-
-            <div class="mb-3">
-                <label for="comment" class="form-label">Leave a Comment:</label>
-                <textarea class="form-control" id="commentv" name="comment" rows="3" placeholder="Write your comment..."></textarea>
-            </div>
-            <button onclick="addComment({{project.id}})" class="btn btn-primary">Post Comment</button>
+    <hr>
+    <section id="comments-all" class="container mt-5">
         
-            
-        <hr>
-
-        <!-- Display Comments -->
-        <div class="comments-list mt-4">
-            {% for comment in project.comments.all %}
-            
-            <div class="comment mb-3 p-3 border rounded">
-                <img src="{{comment.user.picture}}" alt="{{ comment.user.fname }} " class="rounded-circle" style="width: 40px; height: 40px; cursor: pointer;" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" />
-                <p><strong>
-                    {% if comment.user.fname %}
-
-                    {{ comment.user.fname }} {{ comment.user.lname }}
-                            {% else %}
-                            Admin
-                            {% endif %}
-                    </strong> <small class="text-muted">- {{ comment.created_at|date:"M d, Y" }}</small></p>
-                <p>{{ comment.content }}</p>
-
-                <!-- Reply Section -->
-                <div class="replies mt-3">
-                    {% for reply in comment.replies.all %}
-                    <div class="reply mb-2 p-2 border-start">
-                        <img src="{{reply.user.picture}}" alt="{{ reply.user.fname }} " class="rounded-circle" style="width: 40px; height: 40px; cursor: pointer;" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" />
-                        <p><strong>{% if reply.user.fname %}
-
-                            {{ reply.user.fname }} {{ reply.user.lname }}
-                            {% else %}
-                            Admin
-                            {% endif %}
-                        
-                        </strong> <small class="text-muted">- {{ reply.created_at|date:"M d, Y" }}</small></p>
-                        <p>{{ reply.content }}</p>
-                    </div>
-                    {% empty %}
-                    <p>No replies yet.</p>
-                    {% endfor %}
-                </div>
-
-                <!-- Reply Form -->
-                <div class="mt-2">
-                  
-                    <div class="mb-3">
-                        <label for="reply" class="form-label">Reply to this comment:</label>
-                        <textarea class="form-control" id="reply{{ comment.id }}" name="reply" rows="2" placeholder="Write your reply..."></textarea>
-                    </div>
-                    <button onclick="addReply({{ comment.id }})" class="btn btn-secondary">Post Reply</button>
-                </div>
-            </div>
-            {% empty %}
-            <p>No comments yet. Be the first to comment!</p>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-{% endblock %}
+    </section>
+    {% endblock %}
+  
 {% block js %}
-<script src="{% static 'users/js/comment-reply.js'%}"></script>
- {% endblock %}
+
+<script src="{% static 'users/js/comment-reply-rate.js'%}"></script>
+<script>
+    getComments({{ project.id }});
+    getRates({{ project.id }});
+    const starRating = document.querySelector('.star-rating');
+    const ratingValue = document.getElementById('rating-value');
+
+    starRating.addEventListener('change', function(e) {
+        ratingValue.textContent = e.target.value;
+    });
+</script>
+<script>
+    images=$('.imgphoto');
+        src_imges=[];
+        for(i=0;i<images.length;i++){
+            src_imges.push(images[i].src);
+        }
+        $('#next').css('display', 'none');
+        $('#prev').css('display', 'none');
+        var coun=1;
+        $('.imgphoto').click(function(){
+            $('#next').fadeIn();
+            $('#prev').fadeIn();
+            
+            $('#divphoto').css({
+                'display': 'block',
+                'z-index': '50',
+                
+                'width': '100%',
+                'height': '100%',
+                'position': 'fixed',
+                'top': '0',
+                'left': '0',
+                'background-color': 'rgba(0,0,0,0.5)',
+                
+            })
+            $('#divphoto').html(`<img src='${$(this).attr('src')}' width="400px" height="400px" style="position: absolute;
+             top: 50%; left: 50%; transform: translate(-50%, -50%);z-index:200">
+           
+           
+            
+            `);
+            
+           
+        });
+        
+        function next(){
+            coun=src_imges.indexOf($('#divphoto img').attr('src'))
+            if(coun==src_imges.length-1){
+                coun=-1;
+                
+            }
+            $('#divphoto img').attr('src', src_imges[++coun]);
+           $('#divphoto').off("on")
+        }
+        function Previos(){
+            
+            coun=src_imges.indexOf($('#divphoto img').attr('src'))
+            if(coun<= 0){
+                coun=src_imges.length-1;
+                
+            }
+            coun--;
+            $('#divphoto img').attr('src', src_imges[coun]);
+            $('#divphoto').off("on")
+            
+        }
+        $('#divphoto').click(function(e){
+           
+            $('#divphoto').fadeOut();
+            $('#next').fadeOut();
+            $('#prev').fadeOut();
+            })
+        
+    </script>
+  
+    {% endblock%}
