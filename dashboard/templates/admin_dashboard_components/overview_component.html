@@ -54,7 +54,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for project in recent_projects %}
+            {% for project in recent_projects|slice:":3" %} 
             <tr>
               <td>{{ project.title }}</td>
               <td>{{ project.creator.fname }} {{ project.creator.lname }}</td>

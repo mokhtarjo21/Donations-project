@@ -1,49 +1,65 @@
 <!-- Categories Section -->
-<div id="categories" class="container-fluid mb-5">
-    <div class="row mb-3">
-        <div class="col">
-            <a href="{% url 'category_list' %}" class="btn btn-primary me-2">show categories</a>
-        </div>
-    </div>
-</div>
 
-<!-- Tags Section -->
-<div id="tags" class="container-fluid mb-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <h2 class="h4 mb-0">All Tags</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Tag Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for tag in tags %}
-                        <tr>
-                            <td>{{ tag.name }}</td>
-                            <td>
-                                <!-- <a href="{ url 'admin:core_tag_change' tag.id %}" class="btn btn-sm btn-outline-primary">Edit</a> -->
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="2" class="text-center">No tags yet</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-3">
-                <!-- <a href="{ url 'admin:core_tag_add' %}" class="btn btn-primary me-2">Add Tag</a> -->
-                <!-- <a href="{ url 'admin:core_tag_changelist' %}" class="btn btn-outline-secondary">View All Tags</a> -->
-            </div>
-        </div>
-    </div>
+
+<style>
+    .btn-primary {
+        background-color: #385370;
+    }
+</style>
+
+<div id="categories" class="container d-flex justify-content-center mb-5" >
+    <a href="{% url 'category_list' %}" class="btn btn-lg btn-primary shadow px-4 py-2">
+        <i class="bi bi-folder2-open me-2"></i> Show Categories
+    </a>
 </div>
 
 
+
+<div class="row container-fluid">
+    <div class="card">
+      <div class="card-header">Recent Projects</div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 20%">Project Name</th>
+                <th style="width: 20%">Creator</th>
+                <th style="width: 20%">Creation Date</th>
+                <th style="width: 20%">Toggle Feature</th>
+                <th style="width: 20%">View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for project in recent_projects %}
+              <tr>
+                <td>{{ project.title }}</td>
+                <td>{{ project.creator.fname }} {{ project.creator.lname }}</td>
+                <td>{{ project.start_time|date:"M d, Y" }}</td>
+                <td>
+                    <form method="post" id="toggle" action="{% url 'toggle_featured' project.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">
+                            {% if project.is_featured %}
+                            <span class="badge bg-success">Featured</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Not Featured</span>
+                            {% endif %}
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <a href="{% url 'project_detail' project.id %}" class="btn btn-primary me-2">Info</a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="text-center">No projects yet</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>

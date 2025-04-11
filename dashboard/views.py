@@ -161,9 +161,10 @@ class AdminDashboardView(View):
         # getting donation statistics
         context['total_donation_amount'] = Donation.objects.aggregate(Sum('amount'))['amount__sum'] or 0
         
+        
         # getting recent activity
         context['recent_users'] = User.objects.order_by('-date_joined')[:5]
-        context['recent_projects'] = Project.objects.order_by('-start_time')[:5]
+        context['recent_projects'] = Project.objects.order_by('-start_time')
         context['recent_donations'] = Donation.objects.order_by('-created_at')[:5]
         
         # getting top categories by project count
@@ -240,22 +241,13 @@ class AdminDashboardView(View):
 
         return render(request, self.template_name, context)
     
-
-# #### trying to implement the edit user data page
-# class EditUserData(LoginRequiredMixin, UpdateView): 
-#     def get(self, request):
-#         return render(request, 'dacshboard/edit_user_data.html')
-    
-# class EditProfile(LoginRequiredMixin, UpdateView):
-#     model = User
-#     template_name = "main/edit_profile.html"
-#     form_class = UserUpdateForm  
-#     success_url = reverse_lazy("profile") 
-
-#     # to edit the current user rather than passing the user pk in the url 
-#     def get_object(self, queryset=None):
-#         return self.request.user
-
+# to toggle the is_featured in projects
+@staff_member_required
+def toggle_featured(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    project.is_featured = not project.is_featured
+    project.save()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 # In order to export the users data to a csv file

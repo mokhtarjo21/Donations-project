@@ -23,5 +23,7 @@ urlpatterns = [
     path('reports/<int:pk>/', ReportDetailView.as_view(), name='report_detail'),
     path('projects/<int:pk>/edit/', project_edit, name='project_edit'),
     path('projects/<int:pk>/delete/', project_delete, name='project_delete'),
+    # to toggle the project status
+    path('toggle-featured/<int:project_id>/', toggle_featured, name='toggle_featured'),
 
 ]

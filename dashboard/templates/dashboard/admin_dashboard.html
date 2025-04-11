@@ -11,49 +11,78 @@
     .sidebar {
         height: 100vh;
     }
+    html, body {
+        height: 100%;
+    }
+
+    .container-fluid {
+        min-height: 100%;
+    }
+
+    .row.flex-nowrap {
+        min-height: 100vh;
+    }
+    .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: linear-gradient(90deg, #1e79da, rgb(33, 108, 189));
+        /* background-color: #1e79da */
+    }
+
+    .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar text-white p-3">
-            <h4>Admin dashboard</h4>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#overview" onclick="showContent('overview')">Overview</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#usermanagement" onclick="showContent('usermanagement')">User Management</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#projectmanagement" onclick="showContent('projectmanagement')">Project Management</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#reports" onclick="showContent('reports')">Reports</a>
-                </li>
-            </ul>
-        </nav>
+  <div class="row flex-nowrap">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block  sidebar text-white p-3 min-vh-100">
+          <h4>Admin dashboard</h4>
+          <ul class="nav flex-column">
+              <li class="nav-item">
+                  <a class="nav-link text-white" href="#overview" onclick="showContent('overview')">Overview</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-white" href="#usermanagement" onclick="showContent('usermanagement')">User Management</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-white" href="#projectmanagement" onclick="showContent('projectmanagement')">Project Management</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link text-white" href="#reports" onclick="showContent('reports')">Reports</a>
+              </li>
+          </ul>
+      </nav>
 
-        <!-- Main content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <div id="overview" class="content-section">
-                {% include "admin_dashboard_components/overview_component.html"  %}
-            </div>
-            <div id="usermanagement" class="content-section d-none">
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+          <div id="overview" class="content-section">
+              {% include "admin_dashboard_components/overview_component.html"  %}
+          </div>
+          <div id="usermanagement" class="content-section d-none">
               {% include "admin_dashboard_components/user_management.html" %}
-            </div>
-            <div id="projectmanagement" class="content-section d-none">
+          </div>
+          <div id="projectmanagement" class="content-section d-none">
               {% include "admin_dashboard_components/project_management.html" %}
-            </div>
-            <div id="reports" class="content-section d-none">
+          </div>
+          <div id="reports" class="content-section d-none">
               {% include "admin_dashboard_components/report_component.html" %}
-            </div>
-        </main>
-    </div>
+          </div>
+      </main>
+  </div>
 </div>
-
 
 
 
