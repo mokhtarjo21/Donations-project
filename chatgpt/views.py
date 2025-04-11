@@ -30,7 +30,7 @@ def api_request_response(request):
 
       history_anonymous.append({"role": "user", "content": message})
       try:
-         client = OpenAI(api_key="Your-API-KEY")
+         client = OpenAI(api_key="Your-API-KEY") 
          completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=history_anonymous,

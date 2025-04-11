@@ -33,8 +33,8 @@ class LoginView(View):
         current_user = User.objects.get(email=email)
         
         if password == current_user.password:
-            # if not current_user.active_email:
-                # return redirect('active', current_user.id)
+            if not current_user.active_email:
+                return redirect('active', current_user.id)
             
             login(request, current_user)
             return redirect('/')
