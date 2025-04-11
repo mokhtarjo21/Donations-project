@@ -83,7 +83,7 @@ def project_list(request):
 
 
 
-
+from main.views import UserProjects
 
 @login_required
 def project_create(request):
@@ -106,6 +106,7 @@ def project_create(request):
     else:
         form = ProjectForm()
 
+    # return redirect('project_list')
     categories = Category.objects.all()
     tags = Tag.objects.all()
 
@@ -118,20 +119,7 @@ def project_create(request):
 
 
 # # Amr monday evening###########
-# class AdminDashboardView(LoginRequiredMixin, View):
-#     def get(self, request):
-#         # Only show the logged-in user's data
-#         projects = Project.objects.all()
-#         categories = Category.objects.all()
-#         tags = Tag.objects.all()
-
-#         context = {
-#             'projects': projects,
-#             'categories': categories,
-#             'tags': tags,
-#         }
-#         return render(request, 'dashboard/admin_dashboard.html', context)
-    
+ 
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator

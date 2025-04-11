@@ -18,6 +18,12 @@ from django.db.models import Count, Sum
 from django.contrib import messages
 from django.db.models import Q
 from users.models import User 
+from decimal import Decimal
+from django.db.models import Count, Sum
+from django.contrib import messages
+from django.db.models import Q
+from users.models import User 
+from decimal import Decimal, InvalidOperation
 def search_view(request):
     query = request.GET.get('q', '')
     search_type = request.GET.get('type', 'projects')
@@ -44,19 +50,43 @@ def donate_view(request, pk):
 
     if request.method == 'POST':
         amount = request.POST.get('amount')
+
         try:
             amount = Decimal(amount)
-            if amount > 0:
-                project.current_amount += amount
-                project.save()
-                messages.success(request, f"Thanks for donating ${amount:.2f}!")
+
+            if amount <= 0:
+                messages.error(request, "Donation amount must be greater than 0.")
+                return redirect('donate', pk=project.pk)
+
+            # Check how much is left to reach the target
+            remaining = project.remaining_amount
+
+            if remaining == 0:
+                messages.error(request, "This project is already fully funded.")
                 return redirect('project_detail', pk=project.pk)
-            else:
-                messages.error(request, "Amount must be greater than 0.")
-        except ValueError:
-            messages.error(request, "Invalid amount entered.")
+
+            if amount > remaining:
+                messages.error(
+                    request,
+                    f"The highest amount you can donate is ${remaining:.2f}."
+                )
+                return redirect('donate', pk=project.pk)
+
+            # Create the donation
+            Donation.objects.create(
+                user=request.user,
+                project=project,
+                amount=amount
+            )
+
+            messages.success(request, f"Thanks for donating ${amount:.2f}!")
+            return redirect('project_detail', pk=project.pk)
+
+        except (ValueError, InvalidOperation):
+            messages.error(request, "Invalid donation amount.")
 
     return render(request, 'components/donation_form.html', {'project': project})
+
 
 
 class ProjectDetailView(LoginRequiredMixin,DetailView):
@@ -195,7 +225,7 @@ class ProfilePage(LoginRequiredMixin,View):
         )
         
         # Define impact metrics based on categories
-        # This is where you'd implement your specific impact calculations
+
         impacts = []
         for cat_donation in category_donations:
             category = cat_donation['project__category__name']
@@ -292,3 +322,32 @@ class UserProjects(LoginRequiredMixin,View):
         }
         
         return render(request, 'main/user_projects.html', context)
+
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth import logout
+from django.http import HttpResponseForbidden
+from django.contrib import messages
+
+
+@login_required
+def delete_user(request, pk):
+    # Get the requested user
+    user = get_object_or_404(User, pk=pk)
+    if request.user.pk != user.pk:
+        return HttpResponseForbidden("You can only delete your own account")
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        if user.password == password:
+            user.delete()
+            logout(request)
+            messages.success(request, 'Your account has been successfully deleted.')
+            return redirect('login')
+        else:
+            # Password is incorrect
+            messages.error(request, 'Incorrect password. Account deletion failed.')
+            return render(request, 'main/confirm_user_delete.html', {'user': user})
+    
+    return render(request, 'main/confirm_user_delete.html', {'user': user})

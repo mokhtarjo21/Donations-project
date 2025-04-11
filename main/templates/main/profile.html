@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="">
     <!-- Profile Header -->
     <div class="profile-header">
         <img src="{{ user.picture_url }}" alt="Profile Picture" class="profile-pic">
@@ -33,6 +33,8 @@
                     <a href="{% url 'edit_profile' %}" class="btn btn-primary d-block">Edit profile</a>
 
                     <a href="{% url 'user_projects' %}" class="btn btn-primary d-block">My Projects</a>
+
+                    <a href="{% url 'delete_user' user.id %}" class="btn btn-danger d-block">Delete Account</a>
                 </div> 
 
             </div>
@@ -156,7 +158,7 @@
                 {% elif impact.category == "food" %}
                     <strong>🍲 Food:</strong> Donated {{ impact.amount }}$ for making meals <br>
                 {% elif impact.category == "gaza" %}
-                    <strong>🇵🇸 Food:</strong> {{ impact.amount }}$ for gaza children <br>
+                    <strong>🇵🇸 Gaza:</strong> {{ impact.amount }}$ for gaza children <br>
                 {% endif %}
                 {% endfor %}
                 {% else %}

@@ -10,6 +10,7 @@ urlpatterns = [
     path('project/<int:pk>/', ProjectDetailView.as_view(), name='project_detail'),
     path('donate/<int:pk>/', donate_view, name='donate'),
     path('search/', search_view, name='search'),
+    path('delete_user/<int:pk>/', delete_user, name='delete_user'),
     # TODO: Add Views fo thes
 
     # path('project/<int:pk>/', ProjectDetailView.as_view(), name='project_details'),

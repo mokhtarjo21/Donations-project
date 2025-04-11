@@ -2,6 +2,8 @@ from django.db import models
 from users.models import User
 import os
 from django.utils.text import slugify
+from decimal import Decimal
+from django.db.models import Sum
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -67,6 +69,12 @@ class Project(models.Model):
         """Check if project can be cancelled (less than 25% funded)"""
         return self.funding_percentage < 25
 
+    @property
+    def remaining_amount(self):
+        """Calculate remaining amount"""
+        if not self.target or self.target == 0:
+            return Decimal(0)
+        return max(Decimal(0), self.target - self.current_amount)
 
 class ProjectPictures(models.Model):
     """
