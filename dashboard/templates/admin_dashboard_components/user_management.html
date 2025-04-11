@@ -58,10 +58,10 @@
                     </td>
                     <td>{{ usr.phone }}</td>
                     <td>
-                      {% if usr.active_email %}
-                        <span class="badge bg-success">Active</span>
+                      {% if usr.is_staff %}
+                        <span class="badge bg-success">Admin</span>
                       {% else %}
-                        <span class="badge bg-secondary">Inactive</span>
+                        <span class="badge bg-secondary">User</span>
                       {% endif %}
                     </td>
                     <td>

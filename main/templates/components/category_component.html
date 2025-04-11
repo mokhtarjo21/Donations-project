@@ -1,14 +1,105 @@
-<div class="row">
-    {% for category in categories %}
-    <div class="col-md-3 mb-3">
-        <a href="/?category={{ category.slug }}" style="text-decoration: none; color: inherit;">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ category.name }}</h5>
-                    <p class="card-text">{{ category.project_count }} projects</p>
+<div class="row mb-0">
+    <!-- All Categories Button -->
+    <div class="col-md-3 mb-4">
+        <a href="/" class="category-card-link">
+            <div class="card category-card all-category">
+                <div class="card-body text-center">
+                    <div class="category-icon mb-3">
+                        <i class="fa fa-th-large fa-2x"></i>
+                    </div>
+                    <h5 class="card-title fw-bold">All Projects</h5>
+                    <p class="card-text badge bg-success rounded-pill">{{ total_projects }} total</p>
                 </div>
             </div>
         </a>
     </div>
+    
+    <!-- Filter to only show categories with projects -->
+    {% for category in categories %}
+        {% if category.project_count > 0 %}
+        <div class="col-md-3 mb-1">
+            <a href="/?category={{ category.slug }}" class="category-card-link">
+                <div class="card category-card {% if selected_category == category.slug %}active-category{% endif %}">
+                    <div class="card-body text-center">
+                        <div class="category-icon mb-3">
+                            {% if category.icon %}
+                                <i class="fa {{ category.icon }} fa-2x"></i>
+                            {% else %}
+                                <i class="fa fa-folder fa-2x"></i>
+                            {% endif %}
+                        </div>
+                        <h5 class="card-title fw-bold">{{ category.name }}</h5>
+                        <p class="card-text badge bg-primary rounded-pill">{{ category.project_count }} projects</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
     {% endfor %}
 </div>
+
+<style>
+    .category-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    
+    .category-card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        height: 100%;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .all-category {
+        background: linear-gradient(135deg, #f1f9ff 0%, #e6f3ff 100%);
+        border-left: 4px solid #198754;
+    }
+    
+    .active-category {
+        background: linear-gradient(135deg, #eef7f2 0%, #e3f2eb 100%);
+        border-left: 4px solid #0d6efd;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    }
+    
+    .category-icon {
+        color: #0d6efd;
+        transition: all 0.3s ease;
+    }
+    
+    .all-category .category-icon {
+        color: #198754;
+    }
+    
+    .category-card:hover .category-icon {
+        transform: scale(1.2);
+    }
+    
+    .card-title {
+        margin-bottom: 12px;
+        color: #212529;
+    }
+    
+    .card-text {
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .category-card:hover .card-text {
+        background-color: #0d6efd;
+    }
+    
+    .all-category:hover .card-text {
+        background-color: #198754;
+    }
+</style>

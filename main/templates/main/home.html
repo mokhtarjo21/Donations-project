@@ -1,39 +1,38 @@
 {% extends "parent.html" %}
 
+{% block style %}
+<style>
+
+section{
+        
+        background-color: #fffafa;
+    }
+    
+</style>
+{% endblock%}
+
+
 {% block content %}
-<div class="container my-5">
+<div class="container my-1">
     <!-- categories section -->
-    <section class="mb-5">
+    <section class="mb-1">
         <h2>Browse Categories</h2>
-        <div class="row">
-            {% for category in categories %}
-            <div class="col-md-3 mb-3">
-                <a href="/?category={{ category.slug }}" style="text-decoration: none; color: inherit;">
-                    <div class="card {% if category.slug == selected_category %}border-primary{% endif %}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ category.name }}</h5>
-                            <p class="card-text">{{ category.project_count }} projects</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
+            {% include "components/category_component.html" with project=project %}
     </section>
 
     <section>
         <h2>
             {% if selected_category %}
-                Projects in "{{ selected_category|capfirst }}" Category
+             {{ selected_category|capfirst }} : 
             {% else %}
-                Featured Projects
+                All Projects : 
             {% endif %}
         </h2>
     
         {% if projects %}
-        <div class="row">
+        <div class="row mt-0">
             {% for project in projects %}
-            <div class="col-md-4 mb-4 d-flex">
+            <div class="col-md-4 mb-1 d-flex">
                 <div class="card w-100 h-100">
                     {% include "components/project_component.html" with project=project %}
                 </div>
@@ -44,4 +43,37 @@
             <p>No projects found in this category.</p>
         {% endif %}
     </section>
+
+    <section class="py-5" id="about">
+        <div class="container">
+            <div class="row gx-4 align-items-center justify-content-between">
+                <div class="col-md-5 order-2 order-md-1">
+                    <div class="mt-5 mt-md-0">
+                        <span class="text-muted">Our Story</span>
+                        <h2 class="display-5 fw-bold">About Us</h2>
+                        <p class="lead">We founded this crowdfunding platform with a simple vision: to bridge the gap between innovative ideas and the support they need to flourish. Our mission is to empower creators, entrepreneurs, and changemakers by connecting them with a community of backers who believe in their vision.</p>
+                        <p class="lead">Since our launch, we've helped thousands of projects come to life - from groundbreaking tech innovations to heartwarming community initiatives. Every success story strengthens our commitment to building a platform where passion meets possibility.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 offset-md-1 order-1 order-md-2">
+                    <div class="row gx-2 gx-lg-3">
+                        <div class="col-6">
+                            <div class="mb-2"><img class="img-fluid rounded-3" src="https://bonyan.ngo/wp-content/uploads/2023/03/Ways-To-Help-The-Poor-And-Needy.jpg.webp"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-2"><img class="img-fluid rounded-3" src="https://www.ggsanctuary.com/wp-content/uploads/2017/06/give-2.jpg"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-2"><img class="img-fluid rounded-3" src="https://betterworld.org/_astro/building-bridges-of-generosity-tips-for-a-seamless-donation-drive_4M9A5.jpg"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-2"><img class="img-fluid rounded-3" src="https://www.myjoyonline.com/wp-content/uploads/2022/09/Health-Support-Foundation-Accra-Psychiatric-Hospital-2-729x424.jpeg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
 {% endblock %}

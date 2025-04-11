@@ -15,15 +15,7 @@
         <h5 class="card-title">{{ project.title }}</h5>
         <p class="card-text">{{ project.details|truncatewords:30 }}</p>
 
-        <!-- Creator Info -->
-        <div class="mb-2">
-            <small class="text-muted">Created by: {{ project.creator.fname }} {{ project.creator.lname }}</small>
-        </div>
 
-        <!-- Category -->
-        <div class="mb-2">
-            <span class="badge bg-primary">{{ project.category.name }}</span>
-        </div>
 
         <!-- Tags -->
         <div class="mb-2">
@@ -56,9 +48,16 @@
             </small>
         </div>
 
-        <!-- Image Count -->
-        <div class="mt-2">
+        <!-- <div class="mt-2">
             <small class="text-muted">{{ project.image_count }} images</small>
+        </div> -->
+        <div class="mb-2">
+            <small class="text-muted">
+                Created by: {{ project.creator.fname }} {{ project.creator.lname }}
+                {% if project.can_be_cancelled %}
+                <span class="badge bg-danger-subtle text-center">cancellable</span>
+                {% endif %}
+            </small>
         </div>
 
         <!-- Spacer to push footer down -->
@@ -66,11 +65,8 @@
     </div>
 
     <!-- Buttons & Footer -->
-    <div class="card-footer bg-white border-top-0">
+    <div class="card-footer bg-white border-top-0 d-flex justify-content-around gap-3">
         <a href="{% url 'project_detail' project.id %}" class="btn btn-warning btn-sm w-100 mb-1">View Details</a>
         <a href="{% url 'donate' project.id %}" class="btn btn-primary btn-sm w-100 mb-1">Donate</a>
-        {% if project.can_be_cancelled %}
-        <span class="badge bg-warning w-100 text-center">Can be cancelled</span>
-        {% endif %}
     </div>
 </div>
