@@ -9,7 +9,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
    
-    path('', category_list, name='category_list'),
+    path('category_list', category_list, name='category_list'),
     path('categories/add/',category_create, name='category_add'),
     path('categories/edit/<int:pk>/',category_update, name='category_edit'),
     path('categories/delete/<int:pk>/',category_delete, name='category_delete'),

@@ -65,6 +65,7 @@ class ProjectDetailView(LoginRequiredMixin,DetailView):
     context_object_name = 'project'
     
 
+
 class HomePage(TemplateView):
     template_name = 'main/home.html'
     
