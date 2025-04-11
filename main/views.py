@@ -343,11 +343,9 @@ def delete_user(request, pk):
         if user.password == password:
             user.delete()
             logout(request)
-            messages.success(request, 'Your account has been successfully deleted.')
             return redirect('login')
         else:
-            # Password is incorrect
-            messages.error(request, 'Incorrect password. Account deletion failed.')
+            messages.error(request, 'Incorrec t password.')
             return render(request, 'main/confirm_user_delete.html', {'user': user})
     
     return render(request, 'main/confirm_user_delete.html', {'user': user})
